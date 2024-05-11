@@ -1,18 +1,32 @@
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Table {
 
     private String tableName;
+    private String tableFilename;
     private List<String> columnName;
     private List<String> dataType;
     private List<Row> row;
 
-    public Table(String tableName) {
+    public Table(String tableName) throws IOException {
         this.tableName = tableName;
         this.columnName = new ArrayList<>();
         this.dataType = new ArrayList<>();
         this.row = new ArrayList<>();
+        this.tableFilename = tableName + ".txt";
+        File file = new File(tableFilename);
+        if (!file.exists()) {
+            try {
+                file.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
 
@@ -22,6 +36,17 @@ public class Table {
         }
         Row newRow = new Row(values);
         row.add(newRow);
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(tableFilename, true))) {
+            for (Object value : values) {
+                writer.write(value.toString() + ",");
+            }
+            writer.newLine();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    public String getTableFilename() {
+        return tableFilename;
     }
     public void addColumn(String column, String type) {
         if (!type.equals("int") && !type.equals("string") && !type.equals("float")) {
@@ -34,6 +59,8 @@ public class Table {
         }
         System.out.println("Column "+ column +" of type " + type +" successfully.");
     }
+
+
     public void printRow(int rowIndex) {
         if (rowIndex < 0 || rowIndex >= row.size()) {
             throw new IllegalArgumentException("Invalid row index.");
@@ -43,5 +70,6 @@ public class Table {
             System.out.println(columnName.get(i) + ": " + targetRow.getValues().get(i));
         }
     }
+
 }
 
