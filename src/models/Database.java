@@ -1,3 +1,5 @@
+package models;
+
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -13,13 +15,4 @@ public class Database {
         this.tables = new ArrayList<>();
     }
 
-    public Table createTable(String tableName) throws IOException {
-        Table table = new Table(tableName);
-        tables.add(table);
-
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(databaseName + ".txt", true))){
-            writer.write(tableName + ", " + table.getTableFilename() + "\n");
-        }
-        return table;
-    }
 }

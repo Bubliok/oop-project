@@ -1,6 +1,8 @@
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
+package models;
+
+import handlers.TableFileHandlerImpl;
+import models.Row;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -8,7 +10,7 @@ import java.util.List;
 public class Table {
 
     private String tableName;
-    private String tableFilename;
+    private TableFileHandlerImpl fileHandler;
     private List<String> columnName;
     private List<String> dataType;
     private List<Row> row;
@@ -18,36 +20,22 @@ public class Table {
         this.columnName = new ArrayList<>();
         this.dataType = new ArrayList<>();
         this.row = new ArrayList<>();
-        this.tableFilename = tableName + ".txt";
-        File file = new File(tableFilename);
-        if (!file.exists()) {
-            try {
-                file.createNewFile();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+        this.fileHandler = new TableFileHandlerImpl(tableName);
     }
 
+    public String getTableFilename() {
+        return fileHandler.getTableFilename();
+    }
 
-    public void addRow(List<Object> values){
-        if(values.size() != columnName.size()){
+    public void addRow(List<Object> values) throws IOException {
+        if (values.size() != columnName.size()) {
             throw new IllegalArgumentException("Invalid number of values.");
         }
         Row newRow = new Row(values);
         row.add(newRow);
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(tableFilename, true))) {
-            for (Object value : values) {
-                writer.write(value.toString() + ",");
-            }
-            writer.newLine();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        fileHandler.writeRow(values);
     }
-    public String getTableFilename() {
-        return tableFilename;
-    }
+
     public void addColumn(String column, String type) {
         if (!type.equals("int") && !type.equals("string") && !type.equals("float")) {
             throw new IllegalArgumentException("Invalid data type.");
@@ -71,5 +59,12 @@ public class Table {
         }
     }
 
+    public List<String> getDataType() {
+        return dataType;
+    }
+
+    public List<String> getColumnName() {
+        return columnName;
+    }
 }
 
