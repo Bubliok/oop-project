@@ -1,0 +1,12 @@
+import java.util.List;
+
+public class Application {
+    public static void main(String[] args) {
+        Table table1 = new Table("students");
+        table1.addColumn("student_id", "int");
+        table1.addColumn("name", "string");
+        table1.addColumn("age", "int");
+        table1.addRow(List.of(1, "Alice", 20));
+        table1.printRow(0);
+    }
+}
