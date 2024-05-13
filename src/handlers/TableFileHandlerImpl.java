@@ -2,6 +2,7 @@ package handlers;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.List;
 
 public class TableFileHandlerImpl implements TableFileHandler {
@@ -15,6 +16,9 @@ public class TableFileHandlerImpl implements TableFileHandler {
         return tableFilename;
     }
 
+    public String getFilePath() {
+        return Paths.get("").toAbsolutePath().toString()+ "/" + getTableFilename();
+    }
     @Override
     public void writeRow(List<Object> values) throws IOException {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(tableFilename, true))) {
@@ -24,4 +28,5 @@ public class TableFileHandlerImpl implements TableFileHandler {
             writer.newLine();
         }
     }
+
 }

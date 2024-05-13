@@ -5,6 +5,7 @@ import models.Row;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class Table {
@@ -62,9 +63,16 @@ public class Table {
     public List<String> getDataType() {
         return dataType;
     }
-
     public List<String> getColumnName() {
         return columnName;
+    }
+    public String getTableName() {
+        return tableName;
+    }
+    public void loadFromFile(String tableFilePath) {
+    }
+    public String getFilePath() {
+        return fileHandler.getFilePath();
     }
 }
 

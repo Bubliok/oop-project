@@ -1,9 +1,9 @@
 package commands;
 import handlers.CommandHandler;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import models.Table;
+
+import java.io.*;
+import java.util.Arrays;
 
 public class OpenCommand implements Command {
     private CommandHandler commandHandler;
@@ -11,27 +11,44 @@ public class OpenCommand implements Command {
     public OpenCommand(CommandHandler commandHandler) {
         this.commandHandler = commandHandler;
     }
+
     @Override
     public void execute(String[] args) {
         if (args.length < 2) {
-            System.out.println("File not found.");
+            System.out.println("Invalid command. Please provide a file path.");
             return;
         }
-            String filename = args[1];
-            File currentFile = new File(filename);
-            if (!currentFile.exists()) {
-                System.out.println("File not found.");
-                return;
-            }
-            try (BufferedReader reader = new BufferedReader(new FileReader(currentFile))) {
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    System.out.println(line);
+
+        String filePath = args[1];
+        File file = new File(filePath);
+        if (!file.exists()) {
+            System.out.println("File does not exist: " + filePath);
+            return;
+        }
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+            String tableName = reader.readLine();
+            Table table = new Table(tableName);
+            String columnLine = reader.readLine();
+            if (columnLine != null) {
+                String[] columns = columnLine.split(",");
+                for (String column : columns) {
+                    String[] parts = column.split(" ");
+                    if (parts.length == 2) {
+                        table.addColumn(parts[0], parts[1]);
+                    }
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
             }
-            commandHandler.setCurrentFile(currentFile);
-            System.out.println("Opening file: " + filename);
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] values = line.split(",");
+                table.addRow(Arrays.asList(values));
+            }
+            commandHandler.setCurrentTable(table);
+            commandHandler.setCurrentFile(file);
+            System.out.println("Successfully opened " + filePath);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
