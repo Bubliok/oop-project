@@ -2,7 +2,6 @@ package handlers;
 
 import commands.*;
 import models.Table;
-
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
@@ -17,11 +16,16 @@ public class CommandHandler {
         commands.put("close", new CloseCommand(this));
         commands.put("save", new SaveCommand(this));
         commands.put("saveas", new SaveAsCommand(this));
+        commands.put("help", new HelpCommand(this));
         this.currentTable = currentTable;
     }
 
     public void handleCommand(String command) {
-        String[] parts = command.split(" ", 2);
+        if(currentFile == null && !command.startsWith("open")){
+            System.out.println("No file is currently open.");
+            return;
+        }
+        String[] parts = command.split(" ");
         if (commands.containsKey(parts[0])) {
             commands.get(parts[0]).execute(parts);
         } else {
