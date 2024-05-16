@@ -6,6 +6,7 @@ import models.Table;
 
 import javax.xml.crypto.Data;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,10 +26,14 @@ public class CommandHandler {
         commands.put("import", new ImportCommand(this));
         commands.put("showtables", new ShowTablesCommand(this));
         commands.put("describe", new DescribeCommand(this));
+        commands.put("print", new PrintCommand(this));
+        commands.put("export", new ExportCommand(this));
+        commands.put("select", new SelectCommand(this));
+        commands.put("addcolumn", new AddColumnCommand(this));
         this.database = new Database();
     }
 
-    public void handleCommand(String command) {
+    public void handleCommand(String command) throws FileNotFoundException {
         if(currentFile == null && !command.startsWith("open") && !command.startsWith("help")) {
             System.out.println("No file is currently open.");
             return;

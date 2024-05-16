@@ -19,6 +19,14 @@ public class HelpCommand implements Command {
                 "exit             exit the program\n\n" +
                 "import <file>    imports table in the database from filepath\n"+
                 "showtables       shows all loaded tables in the database\n" +
-                "describe <table> shows the name and types of the columns\n");
+                "describe <table> shows the name and types of the columns\n" +
+                "print <table>    prints the content of the table\n" +
+                "export <table> <path> " +
+                "\n\t\t\t\t exports the table in the filepath\n" +
+                "select <column-n> <value> <table> " +
+                "\n\t\t\t\t prints the rows where the columns store the value\n" +
+                "addcolumn <table> <column-name> <column-type> \n\t\t\t\t adds a new column to the table\n"
+
+        );
     }
 }

@@ -13,6 +13,7 @@ public class Row {
     public List<Object> getValues() {
         return values;
     }
+
     public void addValue(Object value) {
         values.add(Objects.requireNonNullElse(value, "NULL"));
     }

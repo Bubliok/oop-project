@@ -31,6 +31,10 @@ public class Table {
         return fileHandler.getTableFilename();
     }
 
+    public List<Row> getRows() {
+        return row;
+    }
+
     public void addRow(List<Object> values) throws IOException {
         if (values.size() != columnName.size()) {
             throw new IllegalArgumentException("Invalid number of values.");
