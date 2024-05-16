@@ -1,12 +1,13 @@
 package commands;
 import handlers.CommandHandler;
+import handlers.TableFileHandlerImpl;
 import models.Table;
 
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-
+import handlers.TableFileHandler;
 
 public class SaveCommand implements Command {
     private CommandHandler commandHandler;
@@ -22,32 +23,18 @@ public class SaveCommand implements Command {
         if (currentFile != null) {
             try (BufferedWriter writer = new BufferedWriter(new FileWriter(currentFile))) {
                 for (Table table : commandHandler.getDatabase().getTables()) {
-                    String filePath = table.getFilePath();
+                    String tableName = table.getTableName();
+                    TableFileHandler fileHandler = new TableFileHandlerImpl(tableName);
+                    String filePath = fileHandler.getFilePath();
                     writer.write(filePath + "," + table.getTableName());
                     writer.newLine();
                 }
                 System.out.println("Successfully saved " + currentFile.getName());
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                System.out.println("Error saving file: " + e.getMessage());
+                return;
             }
         }
     }
 }
-//    @Override
-//    public void execute(String[] args) {
-//        File currentFile = commandHandler.getCurrentFile();
-//        if (currentFile != null) {
-//            try (BufferedWriter writer = new BufferedWriter(new FileWriter(currentFile))) {
-//                for (int i = 0; i < commandHandler.getCurrentTable().getColumnName().size();i++) {
-//                    writer.write(commandHandler.getCurrentTable().getColumnName().get(i) + " " + commandHandler.getCurrentTable().getDataType().get(i));
-//                    if (i < commandHandler.getCurrentTable().getColumnName().size() - 1) {
-//                        writer.write(", ");
-//                    }
-//                }
-//                System.out.println("Successfully saved " + currentFile.getName());
-//            } catch (IOException e) {
-//                throw new RuntimeException(e);
-//            }
-//        }
-//    }
-//}
+

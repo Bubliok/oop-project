@@ -1,5 +1,7 @@
 package commands;
 import handlers.CommandHandler;
+import handlers.TableFileHandler;
+import handlers.TableFileHandlerImpl;
 import models.Table;
 
 import java.io.BufferedWriter;
@@ -47,12 +49,16 @@ public class SaveAsCommand implements Command {
 
             try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
                 for (Table table : commandHandler.getDatabase().getTables()) {
-                    writer.write(table.getFilePath() + "," + table.getTableName());
+                    String tableName = table.getTableName();
+                    TableFileHandler fileHandler = new TableFileHandlerImpl(tableName);
+                    String tableFilePath = fileHandler.getFilePath();
+                    writer.write(tableFilePath + "," + table.getTableName());
                     writer.newLine();
                 }
                 System.out.println("Successfully saved as " + filePath);
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                System.out.println("Error saving file: " + e.getMessage());
+                return;
             }
         } catch (ArrayIndexOutOfBoundsException e) {
             System.out.println("Invalid file path.");

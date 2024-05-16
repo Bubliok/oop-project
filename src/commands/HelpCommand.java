@@ -11,11 +11,14 @@ public class HelpCommand implements Command {
     @Override
     public void execute(String[] args) {
         System.out.println("The following commands are supported:\n" +
-                "open <file>   opens a file\n" +
-                "close         closes currently opened file\n" +
-                "save          saves the currently open file\n" +
-                "saveas <path> saves the currently open file in <path>\n" +
-                "help          prints this information\n" +
-                "exit          exists the program\n");
+                "open <file>      opens a database file\n" +
+                "close            closes currently open database\n" +
+                "save             saves the currently open database\n" +
+                "saveas <path>    saves the currently open database in filepath\n" +
+                "help             prints this information\n" +
+                "exit             exit the program\n\n" +
+                "import <file>    imports table in the database from filepath\n"+
+                "showtables       shows all loaded tables in the database\n" +
+                "describe <table> shows the name and types of the columns\n");
     }
 }

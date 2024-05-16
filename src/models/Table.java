@@ -3,10 +3,12 @@ package models;
 import handlers.TableFileHandlerImpl;
 import models.Row;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 public class Table {
 
@@ -22,6 +24,7 @@ public class Table {
         this.dataType = new ArrayList<>();
         this.row = new ArrayList<>();
         this.fileHandler = new TableFileHandlerImpl(tableName);
+        loadDataTypeFromFile();
     }
 
     public String getTableFilename() {
@@ -46,7 +49,7 @@ public class Table {
         for(Row row : row) {
             row.addValue(null);
         }
-        System.out.println("Column "+ column +" of type " + type +" successfully.");
+        System.out.println("Added column "+ column +" of type " + type +" successfully.");
     }
 
 
@@ -59,7 +62,6 @@ public class Table {
             System.out.println(columnName.get(i) + ": " + targetRow.getValues().get(i));
         }
     }
-
     public List<String> getDataType() {
         return dataType;
     }
@@ -71,8 +73,37 @@ public class Table {
     }
     public void loadFromFile(String tableFilePath) {
     }
-    public String getFilePath() {
-        return fileHandler.getFilePath();
+    public void loadDataTypeFromFile() {
+    try (BufferedReader br = new BufferedReader(new FileReader(tableName + ".xml"))) {
+        String line;
+        if ((line = br.readLine()) != null) {
+            // Assuming the first line of the file contains the column names and data types
+            String[] parts = line.split(",");
+            for (String part : parts) {
+                String[] columnAndType = part.split(" ");
+                if (columnAndType.length == 2) {
+                    // Add the data type to the list
+                    dataType.add(columnAndType[1]);
+                }
+            }
+        }
+    } catch (IOException e) {
+        System.out.println("Error reading file for table " + tableName);
     }
+}
+
+
+
+    // existing constructor and methods...
+
+    public TableFileHandlerImpl getFileHandler() {
+        return this.fileHandler;
+    }
+//    public String getFilePath() {
+//        return fileHandler.getFilePath();
+//    }
+//    use this instead when creating new tables
+//    TableFileHandler fileHandler = new TableFileHandlerImpl(tableName);
+//    Table table = new Table(tableName, fileHandler);
 }
 

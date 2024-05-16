@@ -1,5 +1,6 @@
 package models;
 
+import javax.xml.crypto.Data;
 import java.io.*;
 import java.util.*;
 
@@ -8,27 +9,36 @@ public class Database {
     private String databaseName;
     private String filePath;
 
+    public Database(){};
     public Database(String databaseName) {
         this.databaseName = databaseName;
         this.tables = new HashMap<>();
     }
 
     public void loadFromFile(String filePath) throws IOException {
-        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+        File file = new File(filePath);
+        if (!file.exists()) {
+            System.out.println("Database file does not exist: " + filePath);
+            return;
+        }
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split(",");
-                if (parts.length != 2) {
-                    throw new IOException("Invalid line in database file: " + line);
+                if (parts.length == 2) {
+                    String tableFilePath = parts[0];
+                    File tableFile = new File(tableFilePath);
+                    if (!tableFile.exists()) {
+                        System.out.println("Table file does not exist: " + tableFilePath);
+                        continue;
+                    }
+
+                    String tableName = tableFilePath.substring(tableFilePath.lastIndexOf("/") + 1, tableFilePath.lastIndexOf("."));
+                    Table table = new Table(tableName);
+                    table.loadFromFile(tableFilePath);
+                    this.addTable(table);
                 }
-
-                String tableName = parts[0].trim();
-                String tableFilePath = parts[1].trim();
-
-                Table table = new Table(tableName);
-                table.loadFromFile(tableFilePath);
-
-                tables.put(tableName, table);
             }
         }
     }
@@ -42,6 +52,7 @@ public class Database {
             }
         }
     }
+
     public Collection<Table> getTables() {
         return tables.values();
     }

@@ -7,5 +7,6 @@ import java.util.List;
 // TableFileHandler.java
 public interface TableFileHandler {
     void writeRow(List<Object> values) throws IOException;
+    String getFilePath();
 }
 

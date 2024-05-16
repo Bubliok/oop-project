@@ -14,7 +14,7 @@ public class CommandHandler {
     private Database database;
     private Map<String, Command> commands;
     private File currentFile;
-    public CommandHandler(Table currentTable, Database database) {
+    public CommandHandler() {
         commands = new HashMap<>();
         commands.put("open", new OpenCommand(this));
         commands.put("close", new CloseCommand(this));
@@ -23,12 +23,13 @@ public class CommandHandler {
         commands.put("help", new HelpCommand(this));
 
         commands.put("import", new ImportCommand(this));
-        this.currentTable = currentTable;
-        this.database = database;
+        commands.put("showtables", new ShowTablesCommand(this));
+        commands.put("describe", new DescribeCommand(this));
+        this.database = new Database();
     }
 
     public void handleCommand(String command) {
-        if(currentFile == null && !command.startsWith("open")){
+        if(currentFile == null && !command.startsWith("open") && !command.startsWith("help")) {
             System.out.println("No file is currently open.");
             return;
         }
