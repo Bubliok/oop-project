@@ -1,4 +1,5 @@
 //TODO fix the select command
+//TODO maybe remove colunm number to column name parsing
 package commands;
 
 import handlers.CommandHandler;
