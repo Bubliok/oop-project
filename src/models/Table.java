@@ -78,28 +78,22 @@ public class Table {
     public void loadFromFile(String tableFilePath) {
     }
     public void loadDataTypeFromFile() {
-    try (BufferedReader br = new BufferedReader(new FileReader(tableName + ".xml"))) {
-        String line;
-        if ((line = br.readLine()) != null) {
-            // Assuming the first line of the file contains the column names and data types
-            String[] parts = line.split(",");
-            for (String part : parts) {
-                String[] columnAndType = part.split(" ");
-                if (columnAndType.length == 2) {
-                    // Add the data type to the list
-                    dataType.add(columnAndType[1]);
+        try (BufferedReader br = new BufferedReader(new FileReader(tableName + ".xml"))) {
+            String line;
+            if ((line = br.readLine()) != null) {
+                String[] parts = line.split(",");
+                for (String part : parts) {
+                    String[] columnAndType = part.split(" ");
+                    if (columnAndType.length == 2) {
+                        columnName.add(columnAndType[0]);
+                        dataType.add(columnAndType[1]);
+                    }
                 }
             }
+        } catch (IOException e) {
+            System.out.println("Error reading file for table " + tableName);
         }
-    } catch (IOException e) {
-        System.out.println("Error reading file for table " + tableName);
     }
-}
-
-
-
-    // existing constructor and methods...
-
     public TableFileHandlerImpl getFileHandler() {
         return this.fileHandler;
     }
