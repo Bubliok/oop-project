@@ -32,6 +32,7 @@ public class CommandHandler {
         commands.put("select", new SelectCommand(this));
         commands.put("addcolumn", new AddColumnCommand(this));
         commands.put("update", new UpdateCommand(this));
+        commands.put("delete", new DeleteCommand(this));
         this.database = new Database();
     }
 
