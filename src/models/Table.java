@@ -16,6 +16,7 @@ public class Table {
     private TableFileHandlerImpl fileHandler;
     private List<String> columnName;
     private List<String> dataType;
+    private HashMap<String, String> columnTypes;
     private List<Row> row;
 
     public Table(String tableName) throws IOException {
@@ -23,8 +24,13 @@ public class Table {
         this.columnName = new ArrayList<>();
         this.dataType = new ArrayList<>();
         this.row = new ArrayList<>();
+        this.columnTypes = new HashMap<>();
         this.fileHandler = new TableFileHandlerImpl(tableName);
         loadDataTypeFromFile();
+    }
+
+    public void setFileHandler(TableFileHandlerImpl fileHandler) {
+        this.fileHandler = fileHandler;
     }
 
     public String getTableFilename() {
@@ -56,6 +62,9 @@ public class Table {
         System.out.println("Added column "+ column +" of type " + type +" successfully.");
     }
 
+    public HashMap<String, String> getColumnType() {
+        return columnTypes;
+    }
 
     public void printRow(int rowIndex) {
         if (rowIndex < 0 || rowIndex >= row.size()) {
