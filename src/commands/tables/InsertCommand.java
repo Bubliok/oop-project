@@ -1,72 +1,68 @@
 package commands.tables;
 
 import commands.Command;
-import handlers.DatabaseHandler;
-import models.Column;
-import models.Database;
+import handlers.CommandHandler;
+import handlers.TableFileHandlerImpl;
 import models.Row;
 import models.Table;
-import utils.TableWriter;
-import utils.TypeValidator;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class InsertCommand implements Command {
-    private DatabaseHandler databaseHandler;
+    private CommandHandler commandHandler;
 
-    public InsertCommand(DatabaseHandler databaseHandler) {
-        this.databaseHandler = databaseHandler;
+    public InsertCommand(CommandHandler commandHandler) {
+        this.commandHandler = commandHandler;
     }
 
     @Override
     public void execute(String[] args) {
         if (args.length < 2) {
-            System.out.println("Invalid number of arguments.");
+            System.out.println("Invalid arguments.");
             return;
         }
 
         String tableName = args[1];
-        Database database = databaseHandler.getDatabase();
-        Table table = database.getTable(tableName);
-        TableWriter writer = new TableWriter();
-
+        Table table = commandHandler.getDatabase().getTable(tableName);
         if (table == null) {
-            System.out.println("Table " + tableName + " does not exist.");
+            System.out.println("Table not found.");
             return;
         }
-        if (args.length != table.getColumns().size() + 2) {
-            System.out.println("Invalid number of arguments. Expected " + (table.getColumns().size() + 2) + " but got " + args.length + ".");
-            return;
-        }
-        List<Row> rows = table.getRows();
-        Row newRow = new Row();
-        boolean flag = false;
-        for (int i = 2; i < args.length; i++) {
-            Column targetColumn = table.getColumns().get(i-2);
-            String targetValue = args[i];
-            //System.out.println(args[i]);
-            try {
-               Object validatedValue = TypeValidator.typeValidator(targetValue, targetColumn.getColumnType());
-                newRow.addValue(validatedValue);
-                flag = true;
-            } catch (IllegalArgumentException e) {
-                System.out.println("Invalid data type for " + targetValue + " Expected type: " + targetColumn.getColumnType());
+
+        TableFileHandlerImpl fileHandler = table.getFileHandler();
+        String tableFilePath = fileHandler.getTableFilename();
+
+        try (BufferedReader br = new BufferedReader(new FileReader(tableFilePath))) {
+            String firstRow = br.readLine();
+            String[] columnNames = firstRow.split(",");
+
+            if (args.length - 2 != columnNames.length) {
+                System.out.println("Invalid number of values. Expected " + columnNames.length + " but got " + (args.length - 2));
                 return;
             }
-        }
-            rows.add(newRow);
-        try {
-            writer.writeTable(table, rows, table.getTablePath());
+
+            List<Object> values = new ArrayList<>();
+            for (int i = 2; i < 5; i++) {
+                values.add(args[i]);
+            }
+
+            try {
+                table.addRow(values);
+                System.out.println("Successfully inserted row into table " + tableName);
+            } catch (IllegalArgumentException e) {
+                System.out.println("Invalid number of values: " + e.getMessage());
+            } catch (IOException e) {
+                System.out.println("Error inserting row: " + e.getMessage());
+            }
+        } catch (FileNotFoundException e) {
+            System.out.println("Error reading file for table " + tableName);
         } catch (IOException e) {
-            System.out.println("Error: " + e.getMessage());
-            return;
-        }
-        if (flag) {
-            System.out.println("Row inserted succesfully.");
-        } else {
-            System.out.println("Search value not found.");
+            System.out.println(e.getMessage());
         }
     }
 }
-
