@@ -1,6 +1,7 @@
 //TODO data type checks for this type validator needs to be implemented to read the strings form the file and interpret it as the correct type
-package commands;
+package commands.tables;
 
+import commands.Command;
 import handlers.CommandHandler;
 import handlers.TableFileHandlerImpl;
 import models.Table;

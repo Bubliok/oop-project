@@ -25,8 +25,9 @@ public class HelpCommand implements Command {
                 "\n\t\t\t\t exports the table in the filepath\n" +
                 "select <column-n> <value> <table> " +
                 "\n\t\t\t\t prints the rows where the columns store the value\n" +
-                "addcolumn <table> <column-name> <column-type> \n\t\t\t\t adds a new column to the table\n"
-
+                "addcolumn <table> <column-name> <column-type> \n\t\t\t\t adds a new column to the table\n" +
+                "update <table> <search column-n> <search value> <target column-n> < target value> " +
+                "\n\t\t\t\t updates the target columns of every row where search column and value match\n"
         );
     }
 }

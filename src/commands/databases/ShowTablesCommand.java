@@ -1,8 +1,9 @@
-package commands;
+package commands.databases;
+import commands.Command;
 import handlers.CommandHandler;
 import models.Table;
 
-public class ShowTablesCommand implements Command{
+public class ShowTablesCommand implements Command {
     private CommandHandler commandHandler;
 
     public ShowTablesCommand(CommandHandler commandHandler) {

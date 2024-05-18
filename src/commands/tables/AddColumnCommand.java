@@ -1,6 +1,7 @@
 //TODO do add column tests to make sure it works correctly
-package commands;
+package commands.tables;
 
+import commands.Command;
 import handlers.CommandHandler;
 import models.Table;
 

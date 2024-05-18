@@ -1,10 +1,11 @@
 package handlers;
 
 import commands.*;
+import commands.databases.*;
+import commands.tables.*;
 import models.Database;
 import models.Table;
 
-import javax.xml.crypto.Data;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.HashMap;

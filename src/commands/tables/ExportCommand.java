@@ -1,5 +1,6 @@
-package commands;
+package commands.tables;
 
+import commands.Command;
 import handlers.CommandHandler;
 import models.Table;
 
@@ -8,7 +9,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-public class ExportCommand implements Command{
+public class ExportCommand implements Command {
     private CommandHandler commandHandler;
 
     public ExportCommand(CommandHandler commandHandler) {

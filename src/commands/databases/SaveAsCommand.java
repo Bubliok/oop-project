@@ -1,4 +1,5 @@
-package commands;
+package commands.databases;
+import commands.Command;
 import handlers.CommandHandler;
 import handlers.TableFileHandler;
 import handlers.TableFileHandlerImpl;

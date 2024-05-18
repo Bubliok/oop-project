@@ -1,4 +1,5 @@
-package commands;
+package commands.tables;
+import commands.Command;
 import handlers.CommandHandler;
 import models.Table;
 import models.Database;

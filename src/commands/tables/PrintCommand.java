@@ -1,5 +1,6 @@
-package commands;
+package commands.tables;
 
+import commands.Command;
 import handlers.CommandHandler;
 import handlers.TableFileHandlerImpl;
 import models.Table;

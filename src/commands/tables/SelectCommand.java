@@ -1,7 +1,8 @@
 //TODO fix the select command
 //TODO maybe remove colunm number to column name parsing
-package commands;
+package commands.tables;
 
+import commands.Command;
 import handlers.CommandHandler;
 import handlers.TableFileHandlerImpl;
 import models.Table;
