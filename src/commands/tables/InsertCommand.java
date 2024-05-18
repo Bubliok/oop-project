@@ -1,3 +1,5 @@
+//TODO check if correct read write
+
 package commands.tables;
 
 import commands.Command;
