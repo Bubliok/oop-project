@@ -5,11 +5,18 @@ import handlers.CommandHandler;
 import handlers.TableFileHandlerImpl;
 import models.Row;
 import models.Table;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,32 +44,57 @@ public class InsertCommand implements Command {
         TableFileHandlerImpl fileHandler = table.getFileHandler();
         String tableFilePath = fileHandler.getTableFilename();
 
-        try (BufferedReader br = new BufferedReader(new FileReader(tableFilePath))) {
-            String firstRow = br.readLine();
-            String[] columnNames = firstRow.split(",");
+        try {
+            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+            Document doc = dBuilder.parse(new File(tableFilePath));
 
-            if (args.length - 2 != columnNames.length) {
-                System.out.println("Invalid number of values. Expected " + columnNames.length + " but got " + (args.length - 2));
-                return;
+            Node gradesTableNode = doc.getElementsByTagName("gradesTable").item(0);
+
+            NodeList columnList = ((Element) gradesTableNode).getElementsByTagName("column");
+            List<String> columnNames = new ArrayList<>();
+            List<String> columnTypes = new ArrayList<>();
+            for (int i = 0; i < columnList.getLength(); i++) {
+                Node columnNode = columnList.item(i);
+                if (columnNode.getNodeType() == Node.ELEMENT_NODE) {
+                    Element columnElement = (Element) columnNode;
+                    columnNames.add(columnElement.getAttribute("name"));
+                    columnTypes.add(columnElement.getAttribute("type"));
+                }
+            }
+            Element rowElement = doc.createElement("row");
+            for (int i = 2; i < args.length; i++) {
+                String columnType = columnTypes.get(i - 2);
+                String value = args[i];
+                try {
+                    if (columnType.equals("int")) {
+                        Integer.parseInt(value);
+                    } else if (columnType.equals("float")) {
+                        Float.parseFloat(value);
+                    }
+                } catch (NumberFormatException e) {
+                    System.out.println("Invalid data type for column " + columnNames.get(i - 2));
+                    return;
+                }
+                Element columnElement = doc.createElement(columnNames.get(i - 2));
+                columnElement.appendChild(doc.createTextNode(value));
+                rowElement.appendChild(columnElement);
+                //rowElement.appendChild(doc.createTextNode("\n"));
             }
 
-            List<Object> values = new ArrayList<>();
-            for (int i = 2; i < 5; i++) {
-                values.add(args[i]);
-            }
+            Node rowsNode = ((Element) gradesTableNode).getElementsByTagName("rows").item(0);
+            rowsNode.appendChild(rowElement);
+            rowsNode.appendChild(doc.createTextNode("\n"));
 
-            try {
-                table.addRow(values);
-                System.out.println("Successfully inserted row into table " + tableName);
-            } catch (IllegalArgumentException e) {
-                System.out.println("Invalid number of values: " + e.getMessage());
-            } catch (IOException e) {
-                System.out.println("Error inserting row: " + e.getMessage());
-            }
-        } catch (FileNotFoundException e) {
-            System.out.println("Error reading file for table " + tableName);
-        } catch (IOException e) {
-            System.out.println(e.getMessage());
+            TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            Transformer transformer = transformerFactory.newTransformer();
+            DOMSource source = new DOMSource(doc);
+            StreamResult result = new StreamResult(new File(tableFilePath));
+            transformer.transform(source, result);
+
+            System.out.println("Successfully inserted row into table " + tableName);
+        } catch (Exception e) {
+            System.out.println("Error inserting row: " + e.getMessage());
         }
     }
 }
