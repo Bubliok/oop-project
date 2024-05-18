@@ -39,7 +39,7 @@ public class Table {
         if (values.size() != columnName.size()) {
             throw new IllegalArgumentException("Invalid number of values.");
         }
-        Row newRow = new Row(values);
+        Row newRow = new Row();
         row.add(newRow);
         fileHandler.writeRow(values);
     }
