@@ -1,14 +1,17 @@
 package commands.databases;
 import commands.Command;
 import handlers.CommandHandler;
+import loaders.DatabaseLoader;
 
 import java.io.*;
 
 public class OpenCommand implements Command {
     private CommandHandler commandHandler;
+    private DatabaseLoader databaseLoader;
 
     public OpenCommand(CommandHandler commandHandler) {
         this.commandHandler = commandHandler;
+        this.databaseLoader = new DatabaseLoader();
     }
 
     @Override
@@ -21,7 +24,7 @@ public class OpenCommand implements Command {
         String filePath = args[1];
         File file = new File(filePath);
         if (!file.exists()) {
-            System.out.println("File does not exist: " + filePath);
+            System.out.println("File does not exist.");
             return;
         }
 
@@ -29,9 +32,9 @@ public class OpenCommand implements Command {
         System.out.println("Successfully opened " + filePath);
 
         try {
-            commandHandler.getDatabase().loadFromFile(filePath);
+            databaseLoader.loadFromFile(commandHandler.getDatabase(), filePath);
         } catch (IOException e) {
-            System.out.println("Error when loading database: "+ e.getMessage());
+            System.out.println("Error while loading database: "+ e.getMessage());
             return;
         }
     }

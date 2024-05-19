@@ -23,12 +23,14 @@ public class Application {
 //        table2.addColumn("name", "string");
 //        table2.addColumn("subject", "string");
 //        table2.addRow(List.of(1, "Bob", "Math"));
-
+        commandHandler.handleCommand("open database.xml");
         Scanner scanner = new Scanner(System.in);
 
 
         String command;
+
         while (!(command = scanner.nextLine()).equals("exit")) {
+
             commandHandler.handleCommand(command);
         }
         System.out.println("Exiting the program...");
