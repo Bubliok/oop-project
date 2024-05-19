@@ -131,6 +131,10 @@ public void execute(String[] args) {
         }
     }
     private void printCurrentPage() {
-        System.out.println(pages.get(currentPage));
+        if (!pages.isEmpty()) {
+            System.out.println(pages.get(currentPage));
+        } else {
+            System.out.println("No pages to print.");
+        }
     }
 }
