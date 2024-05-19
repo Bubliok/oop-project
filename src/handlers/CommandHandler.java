@@ -34,6 +34,10 @@ public class CommandHandler {
         commands.put("update", new UpdateCommand(this));
         commands.put("delete", new DeleteCommand(this));
         commands.put("insert", new InsertCommand(this));
+        commands.put("rename", new RenameTableCommand(this));
+        commands.put("count", new CountCommand(this));
+        commands.put("aggregate", new AggregateCommand(this));
+        commands.put("innerjoin", new InnerJoinCommand(this));
         this.database = new Database();
     }
 

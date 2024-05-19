@@ -1,8 +1,16 @@
 package commands;
+import handlers.CommandHandler;
+public class HelpCommand implements Command {
 
-public class HelpCommand implements Command{
+    private CommandHandler commandHandler;
+
+    public HelpCommand(CommandHandler commandHandler) {
+        this.commandHandler = commandHandler;
+    }
+
     @Override
     public void execute(String[] args) {
+
         String helpText = "The following commands are supported:\n" +
                 "  open <file>     \n" +
                 "      Opens a database file\n" +
@@ -43,9 +51,7 @@ public class HelpCommand implements Command{
                 "  count <table> <column-n> <value>\n" +
                 "      Counts the rows where the specified column stores the specified value\n" +
                 "  rename <table> <old column name> <new column name>\n" +
-                "      Renames the specified column in the table\n" +
-                "  innerjoin <table1> <table2> <column-n1> <column-n2>\n" +
-                "      Joins the two tables on the specified columns\n";
+                "      Renames the specified column in the table\n";
 
         System.out.println(helpText);
     }
