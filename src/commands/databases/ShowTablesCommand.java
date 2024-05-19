@@ -10,11 +10,15 @@ public class ShowTablesCommand implements Command {
         this.commandHandler = commandHandler;
     }
 
+
     @Override
     public void execute(String[] args) {
-        for (Table table : commandHandler.getDatabase().getTables()) {
-            System.out.println(table.getTableName());
+        if (commandHandler.getDatabase().getTables().isEmpty()) {
+            System.out.println("No tables to show.");
+        } else {
+            for (Table table : commandHandler.getDatabase().getTables()) {
+                System.out.println(table.getTableName());
+            }
         }
     }
 }
-

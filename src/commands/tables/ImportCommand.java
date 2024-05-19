@@ -2,6 +2,7 @@ package commands.tables;
 
 import commands.Command;
 import handlers.CommandHandler;
+import handlers.TableFileHandlerImpl;
 import models.Table;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -48,7 +49,8 @@ public class ImportCommand implements Command {
                 System.out.println("Error: The file is empty.");
                 return;
             }
-            Table newTable = new Table(tableName);
+            TableFileHandlerImpl fileHandler = new TableFileHandlerImpl(tableName);
+            Table newTable = new Table(tableName, fileHandler);
             Arrays.stream(line.split(", ")).forEach(column -> {
                 String[] parts = column.split(" ");
                 if (parts.length == 2) {

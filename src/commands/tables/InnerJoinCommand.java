@@ -127,7 +127,7 @@ public class InnerJoinCommand implements Command {
             }
 
             for (int i = 0; i < columnList2.getLength(); i++) {
-                if (i != searchColumn2) { 
+                if (i != searchColumn2) {
                     Node columnNode = columnList2.item(i);
                     if (columnNode.getNodeType() == Node.ELEMENT_NODE) {
                         Element columnElement = (Element) columnNode;

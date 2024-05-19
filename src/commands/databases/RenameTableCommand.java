@@ -5,6 +5,8 @@ import handlers.CommandHandler;
 import handlers.TableFileHandlerImpl;
 import models.Table;
 
+import java.io.File;
+
 public class RenameTableCommand implements Command {
     private CommandHandler commandHandler;
 
@@ -33,15 +35,22 @@ public class RenameTableCommand implements Command {
             return;
         }
         try {
-            commandHandler.getDatabase().removeTable(table);
-            table.setTableName(newName);
-            fileHandler.setFilePath(fileHandler.getFilePath().replace(oldName, newName));
-            table.setFileHandler(fileHandler);
-            commandHandler.getDatabase().addTable(table);
+            File oldFile = new File(fileHandler.getFilePath());
+            String newFilePath = fileHandler.getFilePath().replace(oldName, newName);
+            File newFile = new File(newFilePath);
 
+            if (oldFile.renameTo(newFile)) {
+                commandHandler.getDatabase().removeTable(table);
+                table.setTableName(newName);
+                fileHandler.setFilePath(newFilePath);
+                table.setFileHandler(fileHandler);
+                commandHandler.getDatabase().addTable(table);
 
-            System.out.println("Successfully renamed table.");
-        }catch (Exception e){
+                System.out.println("Successfully renamed table to: " + newName);
+            } else {
+                System.out.println("Failed to rename table file.");
+            }
+        } catch (Exception e) {
             System.out.println("Error while renaming table: " + e.getMessage());
             return;
         }
