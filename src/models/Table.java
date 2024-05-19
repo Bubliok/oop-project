@@ -1,12 +1,9 @@
 package models;
 
 import handlers.TableFileHandlerImpl;
-import models.Row;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.io.IOException;
 import java.util.*;
 
@@ -26,7 +23,6 @@ public class Table {
         this.row = new ArrayList<>();
         this.columnTypes = new HashMap<>();
         this.fileHandler = new TableFileHandlerImpl(tableName);
-        loadDataTypeFromFile();
     }
 
     public void setFileHandler(TableFileHandlerImpl fileHandler) {
@@ -39,15 +35,6 @@ public class Table {
 
     public List<Row> getRows() {
         return row;
-    }
-
-    public void addRow(List<Object> values) throws IOException {
-        if (values.size() != columnName.size()) {
-            throw new IllegalArgumentException("Invalid number of values.");
-        }
-        Row newRow = new Row();
-        row.add(newRow);
-        fileHandler.writeRow(values);
     }
 
     public void addColumn(String column, String type) {
@@ -66,15 +53,6 @@ public class Table {
         return columnTypes;
     }
 
-    public void printRow(int rowIndex) {
-        if (rowIndex < 0 || rowIndex >= row.size()) {
-            throw new IllegalArgumentException("Invalid row index.");
-        }
-        Row targetRow = row.get(rowIndex);
-        for (int i = 0; i < columnName.size(); i++) {
-            System.out.println(columnName.get(i) + ": " + targetRow.getValues().get(i));
-        }
-    }
     public List<String> getDataType() {
         return dataType;
     }
@@ -85,23 +63,6 @@ public class Table {
         return tableName;
     }
     public void loadFromFile(String tableFilePath) {
-    }
-    public void loadDataTypeFromFile() {
-        try (BufferedReader br = new BufferedReader(new FileReader(tableName + ".xml"))) {
-            String line;
-            if ((line = br.readLine()) != null) {
-                String[] parts = line.split(",");
-                for (String part : parts) {
-                    String[] columnAndType = part.split(" ");
-                    if (columnAndType.length == 2) {
-                        columnName.add(columnAndType[0]);
-                        dataType.add(columnAndType[1]);
-                    }
-                }
-            }
-        } catch (IOException e) {
-            System.out.println("Error reading file for table " + tableName);
-        }
     }
     public TableFileHandlerImpl getFileHandler() {
         return this.fileHandler;

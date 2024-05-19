@@ -25,6 +25,10 @@ public class ExportCommand implements Command {
 
         String tableName = args[1];
         String exportPath = args[2];
+        if (!exportPath.endsWith(".xml")) {
+            System.out.println("File must end with '.xml'.");
+            return;
+        }
         Table table = commandHandler.getDatabase().getTable(tableName);
         if (table == null) {
             System.out.println("Table " + tableName + " does not exist.");
