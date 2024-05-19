@@ -1,4 +1,3 @@
-//TODO do add column tests to make sure it works correctly
 package commands.tables;
 
 import commands.Command;

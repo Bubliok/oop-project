@@ -29,10 +29,8 @@ public class DatabaseLoader {
                 if (tableNode.getNodeType() == Node.ELEMENT_NODE) {
                     Element tableElement = (Element) tableNode;
                     String tableName = tableElement.getElementsByTagName("name").item(0).getTextContent();
-                    String tablePath = tableElement.getElementsByTagName("path").item(0).getTextContent();
-
-                    Table table = new Table (tableName);
                     TableFileHandlerImpl fileHandler = new TableFileHandlerImpl(tableName);
+                    Table table = new Table (tableName, fileHandler);
                     table.setFileHandler(fileHandler);
                     database.addTable(table);
                 }
