@@ -77,7 +77,11 @@ public void execute(String[] args) {
                         Element columnElement = (Element) columnNode;
                         String columnName = columnElement.getAttribute("name");
                         String cellValue = rowElement.getElementsByTagName(columnName).item(0).getTextContent();
-                        page.append(cellValue).append(" ");
+                        page.append(cellValue);//.append(", ");
+                        //page.append(", ");
+                        if (j < columnList.getLength() - 1) {
+                            page.append(", "); // ", " sled vsqka stoinost bez poslednata
+                        }
                     }
                 }
                 page.append("\n");

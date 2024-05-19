@@ -1,5 +1,3 @@
-//TODO check if correct read write
-
 package commands.tables;
 
 import commands.Command;
@@ -51,9 +49,9 @@ public class InsertCommand implements Command {
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
             Document doc = dBuilder.parse(new File(tableFilePath));
 
-            Node gradesTableNode = doc.getElementsByTagName("gradesTable").item(0);
+            Node TableNode = doc.getElementsByTagName("table").item(0);
 
-            NodeList columnList = ((Element) gradesTableNode).getElementsByTagName("column");
+            NodeList columnList = ((Element) TableNode).getElementsByTagName("column");
             List<String> columnNames = new ArrayList<>();
             List<String> columnTypes = new ArrayList<>();
             for (int i = 0; i < columnList.getLength(); i++) {
@@ -84,7 +82,7 @@ public class InsertCommand implements Command {
                 //rowElement.appendChild(doc.createTextNode("\n"));
             }
 
-            Node rowsNode = ((Element) gradesTableNode).getElementsByTagName("rows").item(0);
+            Node rowsNode = ((Element) TableNode).getElementsByTagName("rows").item(0);
             rowsNode.appendChild(rowElement);
             rowsNode.appendChild(doc.createTextNode("\n"));
 

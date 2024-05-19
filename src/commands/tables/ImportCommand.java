@@ -2,7 +2,6 @@ package commands.tables;
 
 import commands.Command;
 import handlers.CommandHandler;
-import handlers.TableFileHandlerImpl;
 import models.Table;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -24,65 +23,64 @@ public class ImportCommand implements Command {
     }
 
     @Override
-public void execute(String[] args) {
-    if (args.length < 2) {
-        System.out.println("Invalid arguments.");
-        return;
-    }
-
-    String filePath = args[1];
-    File file = new File(filePath);
-    if (!file.exists()) {
-        System.out.println("File does not exist.");
-        return;
-    }
-    String fileName = file.getName();
-    String tableName = fileName.substring(0, fileName.lastIndexOf('.'));
-
-    if (commandHandler.getDatabase().getTable(tableName) != null) {
-        System.out.println("Table " + tableName + " already exists.");
-        return;
-    }
-    try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
-        String line = reader.readLine();
-        if (line == null) {
-            System.out.println("Error: The file is empty.");
+    public void execute(String[] args) {
+        if (args.length < 2) {
+            System.out.println("Invalid arguments.");
             return;
         }
-        Table newTable = new Table(tableName);
-        Arrays.stream(line.split(", ")).forEach(column -> {
-            String[] parts = column.split(" ");
-            if (parts.length == 2) {
-                newTable.addColumn(parts[0], parts[1]);
+
+        String filePath = args[1];
+        File file = new File(filePath);
+        if (!file.exists()) {
+            System.out.println("File does not exist.");
+            return;
+        }
+        String fileName = file.getName();
+        String tableName = fileName.substring(0, fileName.lastIndexOf('.'));
+
+        if (commandHandler.getDatabase().getTable(tableName) != null) {
+            System.out.println("Table " + tableName + " already exists.");
+            return;
+        }
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+            String line = reader.readLine();
+            if (line == null) {
+                System.out.println("Error: The file is empty.");
+                return;
             }
-        });
-        commandHandler.getDatabase().addTable(newTable);
+            Table newTable = new Table(tableName);
+            Arrays.stream(line.split(", ")).forEach(column -> {
+                String[] parts = column.split(" ");
+                if (parts.length == 2) {
+                    newTable.addColumn(parts[0], parts[1]);
+                }
+            });
+            commandHandler.getDatabase().addTable(newTable);
 
-        DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
-        Document doc = docBuilder.parse(commandHandler.getCurrentFile());
+            DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+            Document doc = docBuilder.parse(commandHandler.getCurrentFile());
 
-        Element tableElement = doc.createElement("table");
-        doc.getDocumentElement().appendChild(tableElement);
+            Element tableElement = doc.createElement("table");
+            doc.getDocumentElement().appendChild(tableElement);
 
-        Element nameElement = doc.createElement("name");
-        nameElement.appendChild(doc.createTextNode(newTable.getTableName()));
-        tableElement.appendChild(nameElement);
+            Element nameElement = doc.createElement("name");
+            nameElement.appendChild(doc.createTextNode(newTable.getTableName()));
+            tableElement.appendChild(nameElement);
 
-        Element pathElement = doc.createElement("path");
-        pathElement.appendChild(doc.createTextNode(filePath));
-        tableElement.appendChild(pathElement);
+            Element pathElement = doc.createElement("path");
+            pathElement.appendChild(doc.createTextNode(filePath));
+            tableElement.appendChild(pathElement);
 
-        TransformerFactory transformerFactory = TransformerFactory.newInstance();
-        Transformer transformer = transformerFactory.newTransformer();
-        DOMSource source = new DOMSource(doc);
-        StreamResult result = new StreamResult(commandHandler.getCurrentFile());
-        transformer.transform(source, result);
+            TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            Transformer transformer = transformerFactory.newTransformer();
+            DOMSource source = new DOMSource(doc);
+            StreamResult result = new StreamResult(commandHandler.getCurrentFile());
+            transformer.transform(source, result);
 
-        System.out.println("Successfully added " + tableName);
-    } catch (Exception e) {
-        System.out.println("Error: " + e.getMessage());
+            System.out.println("Successfully added " + tableName);
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+        }
     }
-}
-
 }
