@@ -15,6 +15,7 @@ public class Table {
     private List<String> dataType;
     private HashMap<String, String> columnTypes;
     private List<Row> row;
+    private String filepath;
 
     public Table(String tableName) throws IOException {
         this.tableName = tableName;
@@ -51,6 +52,10 @@ public class Table {
 
     public HashMap<String, String> getColumnType() {
         return columnTypes;
+    }
+
+    public void setTableName(String tableName) {
+        this.tableName = tableName;
     }
 
     public List<String> getDataType() {

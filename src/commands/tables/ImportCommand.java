@@ -5,7 +5,7 @@ import handlers.CommandHandler;
 import models.Table;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-
+import java.io.File;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.Transformer;
@@ -69,7 +69,7 @@ public class ImportCommand implements Command {
             tableElement.appendChild(nameElement);
 
             Element pathElement = doc.createElement("path");
-            pathElement.appendChild(doc.createTextNode(filePath));
+            pathElement.appendChild(doc.createTextNode(file.getAbsolutePath()));
             tableElement.appendChild(pathElement);
 
             TransformerFactory transformerFactory = TransformerFactory.newInstance();

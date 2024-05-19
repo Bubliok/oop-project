@@ -36,6 +36,8 @@ public void execute(String[] args) {
     }
     String tableName = args[1];
     Table table = commandHandler.getDatabase().getTable(tableName);
+    this.pages.clear();
+    this.currentPage = 0; // resetvane na stranicite
 
     if (table == null) {
         System.out.println("Table " + tableName + " does not exist.");

@@ -20,6 +20,11 @@ public class TableFileHandlerImpl implements TableFileHandler {
     public String getFilePath() {
         return Paths.get("").toAbsolutePath().toString()+ "/" + getTableFilename();
     }
+    public String setFilePath(String path) {
+        File file = new File(path);
+        this.tableFilename = file.getName();
+        return getFilePath();
+    }
     @Override
     public void writeRow(List<Object> values) throws IOException {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(tableFilename, true))) {
@@ -29,5 +34,15 @@ public class TableFileHandlerImpl implements TableFileHandler {
             writer.newLine();
         }
     }
-
+//    public void renameTableFile(String newName) {
+//        File oldFile = new File(getFilePath());
+//        String parentPath = oldFile.getParent();
+//        File newFile = new File(parentPath + File.separator + newName + ".xml");
+//        if (oldFile.renameTo(newFile)) {
+//            System.out.println("File renamed successfully");
+//            this.tableFilename = newName + ".xml";
+//        } else {
+//            System.out.println("Failed to rename file");
+//        }
+//    }
 }

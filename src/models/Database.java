@@ -22,6 +22,9 @@ public class Database {
     public void addTable(Table table) {
         tables.put(table.getTableName(), table);
     }
+    public void removeTable(Table table) {
+        tables.remove(table.getTableName());
+    }
     public Table getTable(String tableName) {
         return tables.get(tableName);
     }
