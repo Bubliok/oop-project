@@ -3,38 +3,26 @@ package models;
 import java.util.*;
 
 public class Database {
-    private List<Table> tables = new ArrayList<>();
+    private Map<String, Table> tables = new HashMap<>();
+    private String databaseName;
+    private String filePath;
 
-    public Database(){}
-
-    public void addTable(Table table){
-        tables.add(table);
+    public Database(){};
+    public Database(String databaseName) {
+        this.databaseName = databaseName;
+        this.tables = new HashMap<>();
     }
 
-    public void removeTable(Table table){
-        tables.remove(table);
+    public String getDatabaseName() {
+        return databaseName;
     }
-
-    public List<Table> getTables() {
-        return tables;
+    public Collection<Table> getTables() {
+        return tables.values();
+    }
+    public void addTable(Table table) {
+        tables.put(table.getTableName(), table);
     }
     public Table getTable(String tableName) {
-        for (Table table : tables) {
-            if (table.getTableName().equals(tableName)) {
-                return table;
-            }
-        }
-        return null;
-    }
-
-
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("Database: ");
-        for(Table table: tables){
-            sb.append("Table: ").append(table.getTableName());
-        }
-        return sb.toString();
+        return tables.get(tableName);
     }
 }
