@@ -5,6 +5,7 @@ import models.Row;
 import models.Table;
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
@@ -21,7 +22,7 @@ public class TableLoader {
                     String columnType = parts[1].trim();
                     Column column = new Column(columnName, columnType);
                     table.addColumn(column);
-                    System.out.println(columnName + " " + columnType);
+                    //System.out.println(columnName + " " + columnType);
                 }
             }
             while((line = br.readLine()) != null){
@@ -36,6 +37,8 @@ public class TableLoader {
                 //System.out.println(row);
             }
 
+        } catch (FileNotFoundException e) {
+            System.out.println("File " + table.getTablePath() + " was not found.");
         } catch (IOException e) {
             System.out.println("Error" + e.getMessage());
         }

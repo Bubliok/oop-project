@@ -1,17 +1,17 @@
 package utils;
 
+import models.Database;
 import models.Table;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Map;
 
 public class DatabaseLoader {
-    private Map<String, Table> tables;
+    private Database database;
 
-    public DatabaseLoader(Map<String, Table> tables) {
-        this.tables = tables;
+    public DatabaseLoader(Database database) {
+        this.database = database;
     }
 
     public void loadDatabase(String databasePath) {
@@ -22,7 +22,7 @@ public class DatabaseLoader {
            String tableName = parts[0];
            String tablePath = parts[1];
            Table table = new Table(tableName, tablePath);
-           tables.put(tableName, table);
+           database.addTable(table);
            TableLoader tableLoader = new TableLoader();
            tableLoader.loadTable(table);
        }
