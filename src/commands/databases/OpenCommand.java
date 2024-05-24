@@ -20,6 +20,6 @@ public class OpenCommand implements Command {
 
     @Override
     public void execute(String[] args) {
-        databaseLoader.loadDatabase(args[0]);
+        databaseLoader.loadDatabase(args[1]);
     }
 }

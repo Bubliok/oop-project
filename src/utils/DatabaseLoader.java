@@ -23,6 +23,8 @@ public class DatabaseLoader {
            String tablePath = parts[1];
            Table table = new Table(tableName, tablePath);
            tables.put(tableName, table);
+           TableLoader tableLoader = new TableLoader();
+           tableLoader.loadTable(table);
        }
      } catch (IOException e) {
          System.out.println("Error: " + e.getMessage());

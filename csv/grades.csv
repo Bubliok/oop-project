@@ -1,7 +1,0 @@
-grade_id: int, subject_name: string, grade_value: double
-1, Math, 5.76
-2, Math, 6.00
-3, Math, 5.98
-4, English, 3.43
-5, English, 4.00
-6, English, 3.98
