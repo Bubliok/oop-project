@@ -6,7 +6,7 @@ import java.util.Scanner;
 public class Application {
     public static void main(String[] args) throws IOException {
         OpenCommand openCommand = new OpenCommand();
-        private String databaseFile = "csv/grades.csv";
-        openCommand.execute(databaseFile);
+        String[] path = new String[]{"/Users/bubliok/oop-project/csv/database.csv"};
+        openCommand.execute(path);
     }
 }
