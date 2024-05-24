@@ -1,0 +1,8 @@
+students_id: int, student_name: string, year: int
+1, John, 1
+2, Jane, 2
+3, Jack, 1
+4, Jill, 3
+5, Joe, 4
+6, Jim, 1
+7, Jenny, 2 

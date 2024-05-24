@@ -1,81 +1,53 @@
-package commands.databases;
-import commands.Command;
-import handlers.CommandHandler;
+package commands;
+
+import models.Row;
 import models.Table;
 
 import java.io.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class OpenCommand implements Command {
-    private CommandHandler commandHandler;
+    private Map<String, Table> tables;
 
-    public OpenCommand(CommandHandler commandHandler) {
-        this.commandHandler = commandHandler;
+    public OpenCommand() {
+        tables = new HashMap<>();
     }
 
     @Override
     public void execute(String[] args) {
-        if (args.length < 2) {
-            System.out.println("Invalid command. Please provide a file path.");
-            return;
-        }
-
-        String filePath = args[1];
-        File file = new File(filePath);
-        if (!file.exists()) {
-            System.out.println("File does not exist: " + filePath);
-            return;
-        }
-
-        commandHandler.setCurrentFile(file);
-        System.out.println("Successfully opened " + filePath);
-
-        try {
-            commandHandler.getDatabase().loadFromFile(filePath);
+        String databaseFile = args[0];
+        try (BufferedReader reader = new BufferedReader(new FileReader(databaseFile))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(",");
+                String tableName = parts[0];
+                String tableFile = parts[1];
+                Table table = loadTable(tableName, tableFile);
+                tables.put(tableName, table);
+                System.out.println("Table " + tableName + " loaded successfully");
+            }
         } catch (IOException e) {
-            System.out.println("Error when loading database: "+ e.getMessage());
-            return;
+            e.printStackTrace();
         }
     }
+
+    private Table loadTable(String name, String filePath) throws IOException {
+        File file = new File(filePath);
+        if (!file.exists()) {
+            throw new FileNotFoundException("File " + filePath + " does not exist");
+        }
+        Table table = new Table(name, filePath);
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] values = line.split(",");
+                Row row = new Row(List.of(values));
+                table.addRow(row);
+                System.out.println("Row added to table " + name);
+            }
+        }
+        return table;
+    }
 }
-
-
-//    @Override
-//    public void execute(String[] args) {
-//        if (args.length < 2) {
-//            System.out.println("Invalid command. Please provide a file path.");
-//            return;
-//        }
-//
-//        String filePath = args[1];
-//        File file = new File(filePath);
-//        if (!file.exists()) {
-//            System.out.println("File does not exist: " + filePath);
-//            return;
-//        }
-//
-//        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-//            String line;
-//            while ((line = reader.readLine()) != null) {
-//                String[] parts = line.split(",");
-//                if (parts.length == 2) {
-//                    String tableFilePath = parts[0];
-//                    File tableFile = new File(tableFilePath);
-//                    if (!tableFile.exists()) {
-//                        System.out.println("Table file does not exist: " + tableFilePath);
-//                        continue;
-//                    }
-//                    commandHandler.setCurrentFile(file);
-//                    System.out.println("Successfully opened " + tableFilePath);
-//
-//                    String tableName = tableFilePath.substring(tableFilePath.lastIndexOf("/") + 1, tableFilePath.lastIndexOf("."));
-//                    Table table = new Table(tableName);
-//                    table.loadFromFile(tableFilePath);
-//                    commandHandler.getDatabase().addTable(table);
-//                }
-//            }
-//        } catch (IOException e) {
-//            System.out.println("Error when opening table: "+ e.getMessage());
-//            return;
-//        }
-//    }
-//}

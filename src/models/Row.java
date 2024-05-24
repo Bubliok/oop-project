@@ -17,4 +17,10 @@ public class Row {
     public void addValue(Object value) {
         values.add(Objects.requireNonNullElse(value, "NULL"));
     }
+
+    public void removeValue(Object value) {
+        values.remove(value);
+    }
+
+
 }
