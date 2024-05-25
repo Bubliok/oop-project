@@ -17,7 +17,7 @@ public class TableLoader {
         this.database = database;
     }
 
-    public void loadTable(Table table){
+    public boolean loadTable(Table table){
         try (BufferedReader br = new BufferedReader(new FileReader(table.getTablePath()))){
             String line = br.readLine();
             if(line != null){
@@ -40,13 +40,14 @@ public class TableLoader {
                     row.addValue(value);
                 }
                 table.addRow(row);
-                //System.out.println(row);
             }
             database.addTable(table);
-            //System.out.println(table);
+            return true;
+          //System.out.println(table);
 
         } catch (IOException e) {
             System.out.println("Error: " + e.getMessage());
+            return false;
         }
     }
 }

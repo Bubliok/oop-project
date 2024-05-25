@@ -2,21 +2,20 @@ package handlers;
 
 import commands.Command;
 import commands.HelpCommand;
-import commands.databases.CloseCommand;
-import commands.databases.OpenCommand;
-import commands.databases.SaveAsCommand;
-import commands.databases.SaveCommand;
-import utils.DatabaseLoader;
+import commands.databases.*;
+import commands.tables.DescribeCommand;
+import commands.tables.ExportCommand;
+import commands.tables.ImportCommand;
+import commands.tables.PrintCommand;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.Map;
 
 public class CommandHandler {
     private Map<String, Command> commands;
-    File currentFile;
-    DatabaseHandler databaseHandler;
+    private File currentFile;
+    private DatabaseHandler databaseHandler;
 
     public CommandHandler() {
         databaseHandler = new DatabaseHandler();
@@ -24,8 +23,14 @@ public class CommandHandler {
         commands.put("open", new OpenCommand(this, databaseHandler));
         commands.put("close", new CloseCommand(this));
         commands.put("save", new SaveCommand(this, databaseHandler));
-        commands.put("saveas", new SaveAsCommand(this));
+        commands.put("saveas", new SaveAsCommand(databaseHandler));
         commands.put("help", new HelpCommand());
+
+        commands.put("import", new ImportCommand(databaseHandler));
+        commands.put("showtables", new ShowTablesCommand(databaseHandler));
+        commands.put("describe", new DescribeCommand(this, databaseHandler));
+        commands.put("print", new PrintCommand(databaseHandler));
+        commands.put("export", new ExportCommand(databaseHandler));
     }
 
     public void handleCommand(String command) {

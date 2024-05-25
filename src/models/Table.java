@@ -1,5 +1,6 @@
 package models;
 
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,6 +40,9 @@ public class Table {
 
     public String getTablePath() {
         return tablePath;
+    }
+    public String getAbsoulutePath(){
+        return Paths.get("").toAbsolutePath().toString()+"/"+getTablePath();
     }
 
     public void setTablePath(String tablePath) {

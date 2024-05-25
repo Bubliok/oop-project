@@ -1,16 +1,18 @@
-//TODO  maybe add a database handler so to remove the need for passing it in the command handler as an argument
 import handlers.CommandHandler;
-import java.io.IOException;
+
 import java.util.Scanner;
 
 public class Application {
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
 
 
         CommandHandler commandHandler = new CommandHandler();
         Scanner scanner = new Scanner(System.in);
-        
+
+        String command1 = "open database.csv";
+
         String command;
+            commandHandler.handleCommand(command1);
         while(!(command = scanner.nextLine()).equals("exit")){
             commandHandler.handleCommand(command);
         }

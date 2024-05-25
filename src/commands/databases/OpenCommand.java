@@ -2,13 +2,8 @@ package commands.databases;
 import commands.Command;
 import handlers.CommandHandler;
 import handlers.DatabaseHandler;
-import models.Database;
-import models.Table;
-import utils.DatabaseLoader;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
 
 public class OpenCommand implements Command {
     private DatabaseHandler databaseHandler;
@@ -25,6 +20,12 @@ public class OpenCommand implements Command {
             System.out.println("Invalid arguments. Please provide a file path.");
             return;
         }
+
+        if (commandHandler.getCurrentFile() != null) {
+            System.out.println("A file is already open.");
+            return;
+        }
+
         String filePath = args[1];
         File file = new File(filePath);
         if(!file.exists()){
@@ -32,7 +33,7 @@ public class OpenCommand implements Command {
             return;
         }
         commandHandler.setCurrentFile(file);
-        databaseHandler.loadDatabase(args[1]);
+        databaseHandler.loadDatabase(filePath);
         System.out.println("Successfully opened " + filePath);
     }
 }

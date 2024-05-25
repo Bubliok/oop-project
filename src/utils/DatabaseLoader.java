@@ -22,7 +22,6 @@ public class DatabaseLoader {
            String tableName = parts[0].trim();
            String tablePath = parts[1].trim();
            Table table = new Table(tableName, tablePath);
-           database.addTable(table);
            TableLoader tableLoader = new TableLoader(database);
            tableLoader.loadTable(table);
        }
