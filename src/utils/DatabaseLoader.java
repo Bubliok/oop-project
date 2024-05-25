@@ -19,11 +19,11 @@ public class DatabaseLoader {
        String line;
        while ((line = br.readLine()) != null){
            String[] parts = line.split(",");
-           String tableName = parts[0];
-           String tablePath = parts[1];
+           String tableName = parts[0].trim();
+           String tablePath = parts[1].trim();
            Table table = new Table(tableName, tablePath);
            database.addTable(table);
-           TableLoader tableLoader = new TableLoader();
+           TableLoader tableLoader = new TableLoader(database);
            tableLoader.loadTable(table);
        }
      } catch (IOException e) {

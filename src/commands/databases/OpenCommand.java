@@ -1,6 +1,7 @@
 package commands.databases;
 import commands.Command;
 import handlers.CommandHandler;
+import handlers.DatabaseHandler;
 import models.Database;
 import models.Table;
 import utils.DatabaseLoader;
@@ -10,13 +11,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class OpenCommand implements Command {
-    private Database database;
-    private DatabaseLoader databaseLoader;
+    private DatabaseHandler databaseHandler;
     private CommandHandler commandHandler;
 
-    public OpenCommand(CommandHandler commandHandler) {
-        database = new Database();
-        databaseLoader = new DatabaseLoader(database);
+    public OpenCommand(CommandHandler commandHandler, DatabaseHandler databaseHandler) {
+        this.databaseHandler = databaseHandler;
         this.commandHandler = commandHandler;
     }
 
@@ -33,7 +32,7 @@ public class OpenCommand implements Command {
             return;
         }
         commandHandler.setCurrentFile(file);
-        databaseLoader.loadDatabase(args[1]);
+        databaseHandler.loadDatabase(args[1]);
         System.out.println("Successfully opened " + filePath);
     }
 }

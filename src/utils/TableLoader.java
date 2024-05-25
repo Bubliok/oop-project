@@ -1,6 +1,7 @@
 package utils;
 
 import models.Column;
+import models.Database;
 import models.Row;
 import models.Table;
 
@@ -10,6 +11,11 @@ import java.io.FileReader;
 import java.io.IOException;
 
 public class TableLoader {
+    private Database database;
+
+    public TableLoader(Database database) {
+        this.database = database;
+    }
 
     public void loadTable(Table table){
         try (BufferedReader br = new BufferedReader(new FileReader(table.getTablePath()))){
@@ -36,11 +42,11 @@ public class TableLoader {
                 table.addRow(row);
                 //System.out.println(row);
             }
+            database.addTable(table);
+            //System.out.println(table);
 
-        } catch (FileNotFoundException e) {
-            System.out.println("File " + table.getTablePath() + " was not found.");
         } catch (IOException e) {
-            System.out.println("Error" + e.getMessage());
+            System.out.println("Error: " + e.getMessage());
         }
     }
 }

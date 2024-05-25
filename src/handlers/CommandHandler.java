@@ -6,6 +6,7 @@ import commands.databases.CloseCommand;
 import commands.databases.OpenCommand;
 import commands.databases.SaveAsCommand;
 import commands.databases.SaveCommand;
+import utils.DatabaseLoader;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -15,12 +16,14 @@ import java.util.Map;
 public class CommandHandler {
     private Map<String, Command> commands;
     File currentFile;
+    DatabaseHandler databaseHandler;
 
     public CommandHandler() {
+        databaseHandler = new DatabaseHandler();
         commands = new HashMap<>();
-        commands.put("open", new OpenCommand(this));
+        commands.put("open", new OpenCommand(this, databaseHandler));
         commands.put("close", new CloseCommand(this));
-        commands.put("save", new SaveCommand(this));
+        commands.put("save", new SaveCommand(this, databaseHandler));
         commands.put("saveas", new SaveAsCommand(this));
         commands.put("help", new HelpCommand());
     }
