@@ -42,7 +42,7 @@ public class Table {
         return tablePath;
     }
     public String getAbsoulutePath(){
-        return Paths.get("").toAbsolutePath().toString()+"/"+getTablePath();
+        return Paths.get("").toAbsolutePath().toString()+"/"+getTableName()+".csv";
     }
 
     public void setTablePath(String tablePath) {
@@ -63,5 +63,14 @@ public class Table {
 
     public void setRows(List<Row> rows) {
         this.rows = rows;
+    }
+
+    public boolean hasColumn(String columnName) {
+        for (Column column : columns) {
+            if (column.getColumnName().equals(columnName)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

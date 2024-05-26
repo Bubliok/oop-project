@@ -2,9 +2,9 @@ package models;
 
 public class Column {
     private String columnName;
-    private Object columnType;
+    private String columnType;
 
-    public Column(String columnName, Object columnType) {
+    public Column(String columnName, String columnType) {
         this.columnName = columnName;
         this.columnType = columnType;
     }
@@ -17,11 +17,11 @@ public class Column {
         this.columnName = columnName;
     }
 
-    public Object getColumnType() {
+    public String getColumnType() {
         return columnType;
     }
 
-    public void setColumnType(Object columnType) {
+    public void setColumnType(String columnType) {
         this.columnType = columnType;
     }
 }

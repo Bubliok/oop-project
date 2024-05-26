@@ -7,7 +7,6 @@ import models.Database;
 import models.Table;
 
 import java.io.*;
-import java.nio.file.Path;
 
 public class SaveCommand implements Command {
     private CommandHandler commandHandler;
@@ -24,10 +23,10 @@ public class SaveCommand implements Command {
         Database database = databaseHandler.getDatabase();
         if (currentFile != null) {
             try (BufferedWriter writer = new BufferedWriter(new FileWriter(currentFile))) {
-                System.out.println(database);
+                //System.out.println(database);
                 for (Table table : database.getTables()){
-                    System.out.println(table);
-                    writer.write(table.getTableName()+", "+table.getTablePath());
+                    //System.out.println(table);
+                    writer.write(table.getTableName()+", "+table.getAbsoulutePath());
                     writer.newLine();
                 }
                 System.out.println("Successfully saved: "+currentFile.getName());

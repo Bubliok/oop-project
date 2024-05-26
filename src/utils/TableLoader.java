@@ -36,8 +36,13 @@ public class TableLoader {
                 Row row = new Row();
                 for (int i = 0; i < rowContents.length; i++) {
                     String columnType = (String) table.getColumns().get(i).getColumnType();
-                    Object value = TypeValidator.typeValidator(rowContents[i].trim(), columnType);
-                    row.addValue(value);
+                    try {
+                        Object value = TypeValidator.typeValidator(rowContents[i].trim(), columnType);
+                        row.addValue(value);
+                    } catch (IllegalArgumentException e) {
+                        System.out.println("Invalid type in table file: " + table.getTableName() + "; " + e.getMessage());
+                        return false;
+                    }
                 }
                 table.addRow(row);
             }

@@ -3,10 +3,7 @@ package handlers;
 import commands.Command;
 import commands.HelpCommand;
 import commands.databases.*;
-import commands.tables.DescribeCommand;
-import commands.tables.ExportCommand;
-import commands.tables.ImportCommand;
-import commands.tables.PrintCommand;
+import commands.tables.*;
 
 import java.io.File;
 import java.util.HashMap;
@@ -31,6 +28,10 @@ public class CommandHandler {
         commands.put("describe", new DescribeCommand(this, databaseHandler));
         commands.put("print", new PrintCommand(databaseHandler));
         commands.put("export", new ExportCommand(databaseHandler));
+        commands.put("select", new SelectCommand(this, databaseHandler));
+        commands.put("addcolumn", new AddColumnCommand(databaseHandler));
+        commands.put("update", new UpdateCommand(databaseHandler));
+        commands.put("delete", new DeleteCommand(databaseHandler));
     }
 
     public void handleCommand(String command) {

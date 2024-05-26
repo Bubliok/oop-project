@@ -2,15 +2,14 @@ package commands.tables;
 
 import commands.Command;
 import handlers.DatabaseHandler;
-import models.Column;
 import models.Database;
 import models.Row;
 import models.Table;
+import utils.TableWriter;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.util.List;
 
 public class ExportCommand implements Command {
     private DatabaseHandler databaseHandler;
@@ -32,6 +31,7 @@ public class ExportCommand implements Command {
         Database database = databaseHandler.getDatabase();
         Table table = database.getTable(tableName);
         File directory = file.getParentFile();
+        TableWriter writer = new TableWriter();
 
         if (file.exists()){
             System.out.println("File already exists.");
@@ -53,22 +53,12 @@ public class ExportCommand implements Command {
             return;
         }
 
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))){
-            int columnCount = table.getColumns().size();
-            for (int i = 0; i < columnCount; i++) {
-                Column column = table.getColumns().get(i);
-                writer.write(column.getColumnName() + ":" + column.getColumnType());
-                if (i < columnCount - 1) {
-                    writer.write(", ");
-                }
-            }
-            writer.newLine();
-            for (Row row : table.getRows()){
-                writer.write(row.toString());
-                writer.newLine();
-            }
+        List<Row> rows = table.getRows();
+
+        try {
+            writer.writeTable(table, rows, String.valueOf(file));
             System.out.println("Successfully exported table " + tableName);
-        } catch (IOException e) {
+        } catch (IOException e){
             System.out.println("Error: " + e.getMessage());
             return;
         }
