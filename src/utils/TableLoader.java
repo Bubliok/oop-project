@@ -6,7 +6,6 @@ import models.Row;
 import models.Table;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
@@ -35,7 +34,7 @@ public class TableLoader {
                 String[] rowContents = line.split(",");
                 Row row = new Row();
                 for (int i = 0; i < rowContents.length; i++) {
-                    String columnType = (String) table.getColumns().get(i).getColumnType();
+                    String columnType = table.getColumns().get(i).getColumnType();
                     try {
                         Object value = TypeValidator.typeValidator(rowContents[i].trim(), columnType);
                         row.addValue(value);

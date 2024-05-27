@@ -9,10 +9,7 @@ public class Application {
         CommandHandler commandHandler = new CommandHandler();
         Scanner scanner = new Scanner(System.in);
 
-        String command1 = "open database.csv";
-
         String command;
-            commandHandler.handleCommand(command1);
         while(!(command = scanner.nextLine()).equals("exit")){
             commandHandler.handleCommand(command);
         }

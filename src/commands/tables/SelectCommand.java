@@ -1,7 +1,6 @@
 package commands.tables;
 
 import commands.Command;
-import handlers.CommandHandler;
 import handlers.DatabaseHandler;
 import models.Column;
 import models.Database;
@@ -13,14 +12,12 @@ import java.util.List;
 import java.util.Scanner;
 
 public class SelectCommand implements Command {
-    private CommandHandler commandHandler;
     private DatabaseHandler databaseHandler;
     private List<String> pages;
     private static final int printedRows = 5;
     int currentPage;
 
-    public SelectCommand(CommandHandler commandHandler, DatabaseHandler databaseHandler) {
-        this.commandHandler = commandHandler;
+    public SelectCommand(DatabaseHandler databaseHandler) {
         this.databaseHandler = databaseHandler;
         this.pages = new ArrayList<>();
         this.currentPage = 0;
@@ -32,8 +29,13 @@ public class SelectCommand implements Command {
             System.out.println("Invalid arguments. Type 'help' for more command info.");
             return;
         }
-
-        int columnNumber = Integer.parseInt(args[1]) -1;
+        int columnNumber;
+        try {
+            columnNumber = Integer.parseInt(args[1]) -1;
+        } catch (NumberFormatException e){
+            System.out.println("Error: " + e.getMessage());
+            return;
+        }
         String value = args[2];
         String tableName = args[3];
         Database database = databaseHandler.getDatabase();

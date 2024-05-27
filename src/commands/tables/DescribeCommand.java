@@ -1,18 +1,15 @@
 package commands.tables;
 
 import commands.Command;
-import handlers.CommandHandler;
 import handlers.DatabaseHandler;
 import models.Column;
 import models.Database;
 import models.Table;
 
 public class DescribeCommand implements Command {
-    private CommandHandler commandHandler;
     private DatabaseHandler databaseHandler;
 
-    public DescribeCommand(CommandHandler commandHandler, DatabaseHandler databaseHandler) {
-        this.commandHandler = commandHandler;
+    public DescribeCommand(DatabaseHandler databaseHandler) {
         this.databaseHandler = databaseHandler;
     }
 

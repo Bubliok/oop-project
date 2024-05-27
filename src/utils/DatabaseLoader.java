@@ -27,6 +27,8 @@ public class DatabaseLoader {
        }
      } catch (IOException e) {
          System.out.println("Error: " + e.getMessage());
+     } catch (ArrayIndexOutOfBoundsException e){
+
      }
     }
 }
