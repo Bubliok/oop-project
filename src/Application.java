@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.util.Scanner;
 
 public class Application {
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         CommandHandler commandHandler = new CommandHandler();
         Scanner scanner = new Scanner(System.in);
         
