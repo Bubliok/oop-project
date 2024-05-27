@@ -1,20 +1,23 @@
 package commands.databases;
+
 import commands.Command;
-import handlers.CommandHandler;
+import handlers.DatabaseHandler;
+import models.Database;
 import models.Table;
 
 public class ShowTablesCommand implements Command {
-    private CommandHandler commandHandler;
+    private DatabaseHandler databaseHandler;
 
-    public ShowTablesCommand(CommandHandler commandHandler) {
-        this.commandHandler = commandHandler;
+    public ShowTablesCommand(DatabaseHandler databaseHandler) {
+        this.databaseHandler = databaseHandler;
     }
 
     @Override
     public void execute(String[] args) {
-        for (Table table : commandHandler.getDatabase().getTables()) {
+        Database database = databaseHandler.getDatabase();
+        System.out.println("Currently loaded tables: ");
+        for (Table table : database.getTables()){
             System.out.println(table.getTableName());
         }
     }
 }
-

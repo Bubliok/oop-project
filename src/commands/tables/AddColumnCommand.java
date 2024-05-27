@@ -1,62 +1,68 @@
-//TODO do add column tests to make sure it works correctly
 package commands.tables;
 
 import commands.Command;
-import handlers.CommandHandler;
+import handlers.DatabaseHandler;
+import models.Column;
+import models.Database;
+import models.Row;
 import models.Table;
+import utils.TableWriter;
+import utils.TypeValidator;
 
-import java.io.*;
-import java.util.ArrayList;
+import java.io.IOException;
 import java.util.List;
 
 public class AddColumnCommand implements Command {
-    private CommandHandler commandHandler;
+    private DatabaseHandler databaseHandler;
 
-    public AddColumnCommand(CommandHandler commandHandler) {
-        this.commandHandler = commandHandler;
+    public AddColumnCommand(DatabaseHandler databaseHandler) {
+        this.databaseHandler = databaseHandler;
     }
+
     @Override
     public void execute(String[] args) {
-        if (args.length != 4){
-            System.out.println("Invalid number of arguments. See 'help' for more information.");
+        if (args.length < 4) {
+            System.out.println("Invalid arguments. See 'help' for more information.");
             return;
         }
+
         String tableName = args[1];
         String columnName = args[2];
         String columnType = args[3];
-        Table table = commandHandler.getDatabase().getTable(tableName);
+        Database database = databaseHandler.getDatabase();
+        Table table = database.getTable(tableName);
+        TableWriter writer = new TableWriter();
+
         if (table == null) {
             System.out.println("Table " + tableName + " does not exist.");
             return;
         }
-        table.getColumnName().add(columnName);
-        table.getDataType().add(columnType);
 
-        String tableFilePath = table.getFileHandler().getTableFilename();
-        List<String> updatedRows = new ArrayList<>();
-        try (BufferedReader br = new BufferedReader(new FileReader(tableFilePath))) {
-            String firstRow = br.readLine();
-            if (firstRow == null){
-                updatedRows.add(columnName + " " + columnType);
-            } else {
-                updatedRows.add(firstRow + ", " + columnName + " " + columnType);
-            }
-            String row;
-            while ((row = br.readLine()) != null) {
-                updatedRows.add(row + ",");
-            }
-        } catch (IOException e) {
-            System.out.println("Error reading file for table " + tableName);
+        try {
+            TypeValidator.typeValidator("1", columnType);
+        } catch (IllegalArgumentException e) {
+            System.out.println(e.getMessage());
+            return;
         }
 
-        try (PrintWriter pw = new PrintWriter(new FileWriter(tableFilePath))) {
-            for (String updatedRow : updatedRows) {
-                pw.println(updatedRow);
-            }
-        } catch (IOException e) {
-            System.out.println("Error writing to file for table " + tableName);
+        if (table.hasColumn(columnName)) {
+            System.out.println("Column " + columnName + " already exists.");
+            return;
         }
 
-        System.out.println("Successfully added column " + columnName + " of type " + columnType + " to table " + tableName);
+        Column newColumn = new Column(columnName, columnType);
+        table.addColumn(newColumn);
+
+        List<Row> rows = table.getRows();
+        for (Row row : rows) {
+            row.addValue(null);
+        }
+
+        try {
+            writer.writeTable(table, rows, table.getTablePath());
+            System.out.println("Column added successfully.");
+        } catch (IOException e) {
+            System.out.println("Error: " + e.getMessage());;
+        }
     }
 }

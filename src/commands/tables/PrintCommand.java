@@ -1,68 +1,73 @@
 package commands.tables;
 
 import commands.Command;
-import handlers.CommandHandler;
-import handlers.TableFileHandlerImpl;
+import handlers.DatabaseHandler;
+import models.Column;
+import models.Database;
+import models.Row;
 import models.Table;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
 public class PrintCommand implements Command {
-    private CommandHandler commandHandler;
-    private static final int printedRows = 8;
+    private DatabaseHandler databaseHandler;
     private List<String> pages;
-    private int currentPage;
+    private static final int printedRows = 5;
+    int currentPage;
 
-    public PrintCommand(CommandHandler commandHandler) {
-        this.commandHandler = commandHandler;
+    public PrintCommand(DatabaseHandler databaseHandler) {;
+        this.databaseHandler = databaseHandler;
         this.pages = new ArrayList<>();
         this.currentPage = 0;
     }
 
     @Override
     public void execute(String[] args) {
-        if (args.length != 2) {
-            System.out.println("Invalid argument.");
+        if(args.length < 2) {
+            System.out.println("Invalid arguments. Please provide a table name.");
             return;
         }
+        pages = new ArrayList<>();
+        currentPage = 0;//reset
         String tableName = args[1];
-        Table table = commandHandler.getDatabase().getTable(tableName);
+        Database database = databaseHandler.getDatabase();
+        Table table = database.getTable(tableName);
 
         if (table == null) {
             System.out.println("Table " + tableName + " does not exist.");
             return;
         }
 
-        TableFileHandlerImpl fileHandler = table.getFileHandler();
-        String tableFilePath = fileHandler.getTableFilename();
-
-        try (BufferedReader br = new BufferedReader(new FileReader(tableFilePath))) {
-            String row;
-            StringBuilder page = new StringBuilder();
-            int rowCount = 0;
-            while ((row = br.readLine()) != null) {
-                page.append(row).append("\n");
-                rowCount++;
-                if (rowCount == printedRows) {
-                    pages.add(page.toString());
-                    page = new StringBuilder();
-                    rowCount = 0;
-                }
-            }
-            if (rowCount > 0) {
-                pages.add(page.toString());
-            }
-        } catch (IOException e) {
-            System.out.println("Error reading file for table " + tableName);
+        List<Row> rows = table.getRows();
+        if (rows.isEmpty()){
+            System.out.println("Table " + tableName + " is empty.");
+            return;
         }
+
+        StringBuilder page = new StringBuilder();
+        for (Column column : table.getColumns()){
+            page.append(column.getColumnName()).append("   ");
+        }
+        page.append("\n");
+        int rowCount = 0;
+        for (Row row : rows) {
+            page.append(row.getValues()).append("\n");
+            rowCount++;
+            if (rowCount == printedRows) {
+                pages.add(page.toString());
+                page = new StringBuilder();
+                rowCount = 0;
+            }
+        }
+        if (rowCount > 0) {
+            pages.add(page.toString());
+        }
+
         printCurrentPage();
         System.out.println("Type 'next', 'previous' to navigate pages or 'exit' to exit.");
-        //next, previous, exit
+
         Scanner scanner = new Scanner(System.in);
         String pageCommand;
         while (!(pageCommand = scanner.nextLine()).equals("exit")) {
@@ -94,6 +99,7 @@ public class PrintCommand implements Command {
             System.out.println("This is the first page.");
         }
     }
+
     private void printCurrentPage() {
         System.out.println(pages.get(currentPage));
     }

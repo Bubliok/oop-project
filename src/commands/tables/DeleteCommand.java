@@ -1,70 +1,81 @@
 package commands.tables;
 
 import commands.Command;
-import handlers.CommandHandler;
-import handlers.TableFileHandlerImpl;
+import handlers.DatabaseHandler;
+import models.Column;
+import models.Database;
+import models.Row;
 import models.Table;
+import utils.TableWriter;
 
-import java.io.*;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class DeleteCommand implements Command {
-    private CommandHandler commandHandler;
+    private DatabaseHandler databaseHandler;
 
-    public DeleteCommand(CommandHandler commandHandler) {
-        this.commandHandler = commandHandler;
+    public DeleteCommand(DatabaseHandler databaseHandler) {
+        this.databaseHandler = databaseHandler;
     }
 
     @Override
     public void execute(String[] args) {
-        if (args.length != 4) {
-            System.out.println("Invalid arguments.");
+        if (args.length < 4) {
+            System.out.println("Invalid arguments. See 'help' for more information.");
             return;
         }
 
         String tableName = args[1];
         int searchColumn = Integer.parseInt(args[2]) - 1;
-        String searchValue = args[3];
+        String value = args[3];
+        Database database = databaseHandler.getDatabase();
+        Table table = database.getTable(tableName);
+        TableWriter writer = new TableWriter();
 
-        Table table = commandHandler.getDatabase().getTable(tableName);
         if (table == null) {
-            System.out.println("Table not found.");
+            System.out.println("Table " + tableName + " does not exist.");
             return;
         }
 
-        TableFileHandlerImpl fileHandler = table.getFileHandler();
-        String tableFilePath = fileHandler.getTableFilename();
+//        try {
+//            TypeValidator.typeValidator("1", columnType);
+//        } catch (IllegalArgumentException e) {
+//            System.out.println(e.getMessage());
+//            return;
+//        }
 
-        List<String> rowsToKeep = new ArrayList<>();
-        System.out.println("Search column: " + searchColumn);
-        System.out.println("Search value: " + searchValue);
-        try (BufferedReader br = new BufferedReader(new FileReader(tableFilePath))) {
-            String row;
-            while ((row = br.readLine()) != null) {
-                String[] values = row.split(",");
-                if (searchColumn < 0 || searchColumn >= values.length) {
-                    System.out.println("Invalid column number. The table " + tableName + " has " + values.length + " columns.");
-                    return;
-                }
-                if (!values[searchColumn].trim().equals(searchValue)) {
-                    rowsToKeep.add(row);
-                } else {
-                    System.out.println("Deleted: " + row);
-                }
+//        if (table.hasColumn(columnName)) {
+//            System.out.println("Column " + columnName + " already exists.");
+//            return;
+//        }
+        List<Row> rowsToKeep = new ArrayList<>();
+        List<Column> columns = table.getColumns();
+        List<Row> rows = table.getRows();
+
+        boolean flag = false;
+        for (Row row : rows) {
+            Object columnValue = row.getValues().get(searchColumn);
+            //System.out.println(columnValue);
+            if (columnValue.toString().equals(value)) {
+                flag = true;
+            } else {
+                rowsToKeep.add(row);
             }
+        }
+        table.setRows(rowsToKeep);
+
+        try {
+            writer.writeTable(table, rowsToKeep, table.getTablePath());
         } catch (IOException e) {
             System.out.println("Error: " + e.getMessage());
             return;
         }
 
-        try (PrintWriter pw = new PrintWriter(new FileWriter(tableFilePath))) {
-            for (String row : rowsToKeep) {
-                pw.println(row);
-            }
-            System.out.println("Successfully deleted rows from table " + tableName);
-        } catch (IOException e) {
-            System.out.println("Error: " + e.getMessage());
+        if (!flag){
+            System.out.println("Search value not found.");
+        } else {
+            System.out.println("Rows deleted successfully.");
         }
     }
 }

@@ -1,48 +1,66 @@
 package commands.tables;
 
 import commands.Command;
-import handlers.CommandHandler;
+import handlers.DatabaseHandler;
+import models.Database;
+import models.Row;
 import models.Table;
+import utils.TableWriter;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.util.List;
 
 public class ExportCommand implements Command {
-    private CommandHandler commandHandler;
+    private DatabaseHandler databaseHandler;
 
-    public ExportCommand(CommandHandler commandHandler) {
-        this.commandHandler = commandHandler;
+    public ExportCommand(DatabaseHandler databaseHandler) {
+        this.databaseHandler = databaseHandler;
     }
 
     @Override
     public void execute(String[] args) {
-        if (args.length != 3) {
-            System.out.println("Invalid arguments.");
+        if(args.length < 3){
+            System.out.println("Invalid arguments. Please provide valid name and file path.");
             return;
         }
 
         String tableName = args[1];
-        String exportPath = args[2];
-        Table table = commandHandler.getDatabase().getTable(tableName);
-        if (table == null) {
-            System.out.println("Table " + tableName + " does not exist.");
-            return;
-        }
+        String filePath = args[2];
+        File file = new File(filePath);
+        Database database = databaseHandler.getDatabase();
+        Table table = database.getTable(tableName);
+        File directory = file.getParentFile();
+        TableWriter writer = new TableWriter();
 
-        File file = new File(exportPath);
-        if (file.exists()) {
+        if (file.exists()){
             System.out.println("File already exists.");
             return;
         }
 
-        try {
-            Files.copy(Paths.get(table.getTableFilename()), Paths.get(exportPath));
-            System.out.println("Successfully exported table " + tableName + " to " + exportPath);
+        if (file.isDirectory()){
+            System.out.println("No file name provided.");
+            return;
+        }
 
-        } catch (IOException e) {
-            System.out.println("Error exporting table: " + e.getMessage());
+        if (directory == null){
+            System.out.println("Invalid file path.");
+            return;
+        }
+
+        if(table == null){
+            System.out.println("Table named: " + tableName + " does not exist.");
+            return;
+        }
+
+        List<Row> rows = table.getRows();
+
+        try {
+            writer.writeTable(table, rows, String.valueOf(file));
+            System.out.println("Successfully exported table " + tableName);
+        } catch (IOException e){
+            System.out.println("Error: " + e.getMessage());
+            return;
         }
     }
 }

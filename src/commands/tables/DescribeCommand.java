@@ -1,52 +1,36 @@
 package commands.tables;
 
 import commands.Command;
-import handlers.CommandHandler;
-import handlers.TableFileHandlerImpl;
+import handlers.DatabaseHandler;
+import models.Column;
+import models.Database;
 import models.Table;
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
 
 public class DescribeCommand implements Command {
-    private CommandHandler commandHandler;
+    private DatabaseHandler databaseHandler;
 
-    public DescribeCommand(CommandHandler commandHandler) {
-        this.commandHandler = commandHandler;
+    public DescribeCommand(DatabaseHandler databaseHandler) {
+        this.databaseHandler = databaseHandler;
     }
 
     @Override
-public void execute(String[] args) {
-    if (args.length != 2) {
-        System.out.println("Invalid argument.");
-        return;
-    }
-
-    String tableName = args[1];
-    Table table = commandHandler.getDatabase().getTable(tableName);
-
-    if (table == null) {
-        System.out.println("Table " + tableName + " does not exist.");
-        return;
-    }
-
-    TableFileHandlerImpl fileHandler = table.getFileHandler();
-    String tableFilePath = fileHandler.getTableFilename();
-
-    try (BufferedReader br = new BufferedReader(new FileReader(tableFilePath))) {
-        String line;
-        if ((line = br.readLine()) != null) {
-            String[] parts = line.split(",");
-            System.out.println("Column Name\tData Type");
-            for (String part : parts) {
-                String[] nameAndType = part.trim().split(" ",2);
-                if (nameAndType.length == 2) {
-                    System.out.println(nameAndType[0] + "\t" + nameAndType[1]);
-                }
-            }
+    public void execute(String[] args) {
+        if(args.length < 2){
+            System.out.println("Invalid arguments. Please provide a valid table name.");
+            return;
         }
-    } catch (IOException e) {
-        System.out.println("Error reading file for table " + tableName);
+        String tableName = args[1];
+        Database database = databaseHandler.getDatabase();
+        Table table = database.getTable(tableName);
+
+        if (table == null) {
+            System.out.println("Table " + tableName + " does not exist.");
+            return;
+        }
+
+        System.out.println("Column name\t\t\tColumn Type");
+        for (Column column : table.getColumns()){
+            System.out.println(column.getColumnName() + " \t\t" + column.getColumnType());
+        }
     }
-}
 }

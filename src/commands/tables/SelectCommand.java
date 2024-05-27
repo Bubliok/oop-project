@@ -1,133 +1,132 @@
-//TODO fix the select command
-//TODO maybe remove colunm number to column name parsing
 package commands.tables;
 
 import commands.Command;
-import handlers.CommandHandler;
-import handlers.TableFileHandlerImpl;
+import handlers.DatabaseHandler;
+import models.Column;
+import models.Database;
+import models.Row;
 import models.Table;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
 public class SelectCommand implements Command {
-    private CommandHandler commandHandler;
-    private static final int printedRows = 8;
+    private DatabaseHandler databaseHandler;
     private List<String> pages;
-    private int currentPage;
+    private static final int printedRows = 5;
+    int currentPage;
 
-    public SelectCommand(CommandHandler commandHandler) {
-        this.commandHandler = commandHandler;
+    public SelectCommand(DatabaseHandler databaseHandler) {
+        this.databaseHandler = databaseHandler;
         this.pages = new ArrayList<>();
         this.currentPage = 0;
     }
 
     @Override
     public void execute(String[] args) {
-        if (args.length != 4) {
-            System.out.println("Invalid number of arguments. See 'help' for more information.");
+        if(args.length < 4) {
+            System.out.println("Invalid arguments. Type 'help' for more command info.");
             return;
         }
-//        int value = Integer.parseInt(args[2]);
+        int columnNumber;
+        try {
+            columnNumber = Integer.parseInt(args[1]) -1;
+        } catch (NumberFormatException e){
+            System.out.println("Error: " + e.getMessage());
+            return;
+        }
         String value = args[2];
         String tableName = args[3];
+        Database database = databaseHandler.getDatabase();
+        Table table = database.getTable(tableName);
+        pages = new ArrayList<>();
+        currentPage = 0;//reset
 
-        Table table = commandHandler.getDatabase().getTable(tableName);
-        if (table == null) {
+        if (table == null){
             System.out.println("Table " + tableName + " does not exist.");
             return;
         }
+        //System.out.println(table);
 
-        TableFileHandlerImpl fileHandler = table.getFileHandler();
-        String tableFilePath = fileHandler.getTableFilename();
-
-        try (BufferedReader br = new BufferedReader(new FileReader(tableFilePath))) {
-            String firstRow = br.readLine();
-
-            if (firstRow == null) {
-                System.out.println("Table " + tableName + " is empty.");
-                return;
-            }
-            String[] columnNames = firstRow.split(",");
-            int columnNumber = Integer.parseInt(args[1]) - 1;
-            if (columnNumber < 0 || columnNumber >= columnNames.length) {
-                System.out.println("Invalid column number. The table " + tableName + " has " + columnNames.length + " columns.");
-                return;
-            }
-            System.out.println("Selected column: " + columnNames[columnNumber]);
-            System.out.println("Selected value: " + value);
-            // br.readLine();
-
-            String row;
-            StringBuilder page = new StringBuilder();
-            int rowCount = 0;
-            while ((row = br.readLine()) != null) {
-                String[] values = row.trim().split(",");
-                if (values[columnNumber].trim().equals(value)) {
-                    page.append(row).append("\n");
-                    rowCount++;
-                    if (rowCount == printedRows) {
-                        pages.add(page.toString());
-                        page = new StringBuilder();
-                        rowCount = 0;
-                    }
-                    //System.out.println(values[columnNumber].trim());
-                }
-            }
-            if (rowCount > 0) {
-                pages.add(page.toString());
-            }
-            if (pages.isEmpty()) {
-                System.out.println("No matching rows found.");
-                return;
-            }
-            printCurrentPage();
-            System.out.println("Type 'next', 'previous' to navigate pages or 'exit' to exit.");
-            //next, previous, exit
-            Scanner scanner = new Scanner(System.in);
-            String pageCommand;
-            while (!(pageCommand = scanner.nextLine()).equals("exit")) {
-                if (pageCommand.equals("next")) {
-                    nextPage();
-                } else if (pageCommand.equals("previous")) {
-                    previousPage();
-                } else {
-                    System.out.println("Invalid command. Use 'next', 'previous' or 'exit'.");
-                }
-            }
-            System.out.println("Exited select dialog.");
-        } catch (FileNotFoundException e) {
-            System.out.println("File not found: " + e.getMessage());
-        } catch (IOException e) {
-            System.out.println("Error: " + e.getMessage());
-        } catch (NumberFormatException e) {
+        List<Column> columns = table.getColumns();
+        if(columnNumber < 0 || columnNumber >= columns.size()){
             System.out.println("Invalid column number.");
-        } catch (ArrayIndexOutOfBoundsException e) {
-            System.out.println("Error: " + e.getMessage());
+            return;
         }
+
+        List<Row> rows = table.getRows();
+        StringBuilder page = new StringBuilder();
+        for (Column column : table.getColumns()){
+            //System.out.println("Column name: "+column.getColumnName());
+            page.append(column.getColumnName()).append("   ");
+        }
+        page.append("\n");
+        int rowCount = 0;
+        for (Row row : rows) {
+            Object columnValue = row.getValues().get(columnNumber);
+            //System.out.println("Column value: "+columnValue);
+            if (columnValue != null && columnValue.toString().equals(value)){
+                //System.out.println(row.getValues());
+                page.append(row.getValues()).append("\n");
+                rowCount++;
+            }
+
+            if (rowCount == printedRows) {
+                pages.add(page.toString());
+                page = new StringBuilder();
+                rowCount = 0;
+            }
+        }
+        if (rowCount > 0) {
+            pages.add(page.toString());
+        }
+
+        if (printCurrentPage()){
+            System.out.println("Type 'next', 'previous' to navigate pages or 'exit' to exit.");
+        } else {
+            return;
+        }
+
+        Scanner scanner = new Scanner(System.in);
+        String pageCommand;
+        while (!(pageCommand = scanner.nextLine()).equals("exit")) {
+            if (pageCommand.equals("next")) {
+                nextPage();
+            } else if (pageCommand.equals("previous")) {
+                previousPage();
+            } else {
+                System.out.println("Invalid command. Use 'next', 'previous' or 'exit'.");
+            }
+        }
+        System.out.println("Exited print dialog.");
     }
-    public void nextPage(){
-        if (currentPage < pages.size() - 1){
+
+    public void nextPage() {
+        if (currentPage < pages.size() - 1) {
             currentPage++;
             printCurrentPage();
         } else {
             System.out.println("No other pages.");
         }
     }
-    public void previousPage(){
-        if (currentPage > 0){
+
+    public void previousPage() {
+        if (currentPage > 0) {
             currentPage--;
             printCurrentPage();
         } else {
             System.out.println("This is the first page.");
         }
     }
-    public void printCurrentPage(){
+
+    private boolean printCurrentPage() {
+        if (!pages.isEmpty()) {
             System.out.println(pages.get(currentPage));
+            return true;
+        } else {
+            System.out.println("No matching rows found.");
+            return false;
+        }
     }
 }

@@ -1,81 +1,39 @@
 package commands.databases;
 import commands.Command;
 import handlers.CommandHandler;
-import models.Table;
+import handlers.DatabaseHandler;
 
-import java.io.*;
+import java.io.File;
 
 public class OpenCommand implements Command {
+    private DatabaseHandler databaseHandler;
     private CommandHandler commandHandler;
 
-    public OpenCommand(CommandHandler commandHandler) {
+    public OpenCommand(CommandHandler commandHandler, DatabaseHandler databaseHandler) {
+        this.databaseHandler = databaseHandler;
         this.commandHandler = commandHandler;
     }
 
     @Override
     public void execute(String[] args) {
-        if (args.length < 2) {
-            System.out.println("Invalid command. Please provide a file path.");
+        if(args.length < 2) {
+            System.out.println("Invalid arguments. Please provide a file path.");
+            return;
+        }
+
+        if (commandHandler.getCurrentFile() != null) {
+            System.out.println("A file is already open.");
             return;
         }
 
         String filePath = args[1];
         File file = new File(filePath);
-        if (!file.exists()) {
-            System.out.println("File does not exist: " + filePath);
+        if(!file.exists()){
+            System.out.println("File does not exist.");
             return;
         }
-
         commandHandler.setCurrentFile(file);
+        databaseHandler.loadDatabase(filePath);
         System.out.println("Successfully opened " + filePath);
-
-        try {
-            commandHandler.getDatabase().loadFromFile(filePath);
-        } catch (IOException e) {
-            System.out.println("Error when loading database: "+ e.getMessage());
-            return;
-        }
     }
 }
-
-
-//    @Override
-//    public void execute(String[] args) {
-//        if (args.length < 2) {
-//            System.out.println("Invalid command. Please provide a file path.");
-//            return;
-//        }
-//
-//        String filePath = args[1];
-//        File file = new File(filePath);
-//        if (!file.exists()) {
-//            System.out.println("File does not exist: " + filePath);
-//            return;
-//        }
-//
-//        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-//            String line;
-//            while ((line = reader.readLine()) != null) {
-//                String[] parts = line.split(",");
-//                if (parts.length == 2) {
-//                    String tableFilePath = parts[0];
-//                    File tableFile = new File(tableFilePath);
-//                    if (!tableFile.exists()) {
-//                        System.out.println("Table file does not exist: " + tableFilePath);
-//                        continue;
-//                    }
-//                    commandHandler.setCurrentFile(file);
-//                    System.out.println("Successfully opened " + tableFilePath);
-//
-//                    String tableName = tableFilePath.substring(tableFilePath.lastIndexOf("/") + 1, tableFilePath.lastIndexOf("."));
-//                    Table table = new Table(tableName);
-//                    table.loadFromFile(tableFilePath);
-//                    commandHandler.getDatabase().addTable(table);
-//                }
-//            }
-//        } catch (IOException e) {
-//            System.out.println("Error when opening table: "+ e.getMessage());
-//            return;
-//        }
-//    }
-//}
