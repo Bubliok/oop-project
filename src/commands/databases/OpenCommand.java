@@ -2,6 +2,7 @@ package commands.databases;
 import commands.Command;
 import handlers.CommandHandler;
 import handlers.DatabaseHandler;
+import utils.DatabaseLoader;
 
 import java.io.File;
 
