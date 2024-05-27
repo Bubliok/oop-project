@@ -1,8 +1,5 @@
 import handlers.CommandHandler;
-import models.Database;
-import models.Table;
 
-import java.io.IOException;
 import java.util.Scanner;
 
 public class Application {

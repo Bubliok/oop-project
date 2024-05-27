@@ -1,16 +1,8 @@
 package commands;
-import handlers.CommandHandler;
-public class HelpCommand implements Command {
 
-    private CommandHandler commandHandler;
-
-    public HelpCommand(CommandHandler commandHandler) {
-        this.commandHandler = commandHandler;
-    }
-
+public class HelpCommand implements Command{
     @Override
     public void execute(String[] args) {
-
         String helpText = "The following commands are supported:\n" +
                 "  open <file>     \n" +
                 "      Opens a database file\n" +

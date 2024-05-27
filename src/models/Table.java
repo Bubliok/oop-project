@@ -1,69 +1,76 @@
 package models;
 
-import handlers.TableFileHandlerImpl;
-
-import java.io.IOException;
-import java.util.*;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Table {
-
     private String tableName;
-    private TableFileHandlerImpl fileHandler;
-    private List<String> columnName;
-    private List<String> dataType;
-    private HashMap<String, String> columnTypes;
-    private List<Row> row;
+    private String tablePath;
+    private List<Column> columns;
+    private List<Row> rows;
 
-    public Table(String tableName, TableFileHandlerImpl tableFileHandler) throws IOException {
+    public Table(String tableName, String tablePath) {
         this.tableName = tableName;
-        this.columnName = new ArrayList<>();
-        this.dataType = new ArrayList<>();
-        this.row = new ArrayList<>();
-        this.columnTypes = new HashMap<>();
-        this.fileHandler = tableFileHandler;
+        this.tablePath = tablePath;
+        this.rows = new ArrayList<>();
+        this.columns = new ArrayList<>();
     }
 
-    public void setFileHandler(TableFileHandlerImpl fileHandler) {
-        this.fileHandler = fileHandler;
+    public void addRow(Row row){
+        this.rows.add(row);
+    }
+    //add a new column object to the columns list
+    public void addColumn(Column column){
+        this.columns.add(column);
+    }
+    //remove a column object from the columns list
+    public void removeColumn(Column column){
+        this.columns.remove(column);
     }
 
-    public String getTableFilename() {
-        return fileHandler.getTableFilename();
-    }
 
-    public List<Row> getRows() {
-        return row;
-    }
-
-    public void addColumn(String column, String type) {
-        if (!type.equals("int") && !type.equals("string") && !type.equals("float")) {
-            throw new IllegalArgumentException("Invalid data type.");
-        }
-        columnName.add(column);
-        dataType.add(type);
-        for(Row row : row) {
-            row.addValue(null);
-        }
-        System.out.println("Added column "+ column +" of type " + type +" successfully.");
-    }
-
-    public HashMap<String, String> getColumnType() {
-        return columnTypes;
-    }
-    public void setTableName(String tableName) {
-        this.tableName = tableName;
-    }
-    public List<String> getDataType() {
-        return dataType;
-    }
-    public List<String> getColumnName() {
-        return columnName;
-    }
     public String getTableName() {
         return tableName;
     }
-    public TableFileHandlerImpl getFileHandler() {
-        return this.fileHandler;
+
+    public void setTableName(String tableName) {
+        this.tableName = tableName;
+    }
+
+    public String getTablePath() {
+        return tablePath;
+    }
+    public String getAbsoulutePath(){
+        return Paths.get("").toAbsolutePath().toString()+"/"+getTableName()+".csv";
+    }
+
+    public void setTablePath(String tablePath) {
+        this.tablePath = tablePath;
+    }
+
+    public List<Column> getColumns() {
+        return columns;
+    }
+
+    public void setColumns(List<Column> columns) {
+        this.columns = columns;
+    }
+
+    public List<Row> getRows() {
+        return rows;
+    }
+
+    public void setRows(List<Row> rows) {
+        this.rows = rows;
+    }
+
+    public boolean hasColumn(String columnName) {
+        for (Column column : columns) {
+            if (column.getColumnName().equals(columnName)) {
+                return true;
+            }
+        }
+        return false;
     }
 }
-

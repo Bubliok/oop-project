@@ -1,64 +1,36 @@
 package commands.tables;
 
 import commands.Command;
-import handlers.CommandHandler;
-import handlers.TableFileHandlerImpl;
+import handlers.DatabaseHandler;
+import models.Column;
+import models.Database;
 import models.Table;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
 
 public class DescribeCommand implements Command {
-    private CommandHandler commandHandler;
+    private DatabaseHandler databaseHandler;
 
-    public DescribeCommand(CommandHandler commandHandler) {
-        this.commandHandler = commandHandler;
+    public DescribeCommand(DatabaseHandler databaseHandler) {
+        this.databaseHandler = databaseHandler;
     }
 
     @Override
     public void execute(String[] args) {
-        if (args.length != 2) {
-            System.out.println("Invalid argument.");
+        if(args.length < 2){
+            System.out.println("Invalid arguments. Please provide a valid table name.");
             return;
         }
-
         String tableName = args[1];
-        Table table = commandHandler.getDatabase().getTable(tableName);
+        Database database = databaseHandler.getDatabase();
+        Table table = database.getTable(tableName);
 
         if (table == null) {
             System.out.println("Table " + tableName + " does not exist.");
             return;
         }
 
-        TableFileHandlerImpl fileHandler = table.getFileHandler();
-        String tableFilePath = fileHandler.getTableFilename();
-
-        try{
-            DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
-            Document doc = docBuilder.parse(tableFilePath);
-
-            NodeList columnNodes = doc.getElementsByTagName("column");
-
-            System.out.println("Column Name\tData Type");
-            for (int i = 0; i < columnNodes.getLength(); i++) {
-                Element columnElement = (Element) columnNodes.item(i);
-                String columnName = columnElement.getAttribute("name");
-                String columnType = columnElement.getAttribute("type");
-                System.out.println(columnName + "\t" + columnType);
-            }
-        } catch (ParserConfigurationException | IOException | SAXException e) {
-            System.out.println("Error" + e.getMessage());
+        System.out.println("Column name\t\t\tColumn Type");
+        for (Column column : table.getColumns()){
+            System.out.println(column.getColumnName() + " \t\t" + column.getColumnType());
         }
-
     }
 }
