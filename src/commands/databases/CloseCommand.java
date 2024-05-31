@@ -4,6 +4,7 @@ import commands.Command;
 import handlers.CommandHandler;
 
 import java.io.File;
+import java.io.IOException;
 
 public class CloseCommand implements Command {
     private CommandHandler commandHandler;

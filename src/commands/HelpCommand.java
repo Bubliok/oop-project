@@ -44,7 +44,7 @@ public class HelpCommand implements Command{
                 "      Counts the rows where the specified column stores the specified value\n" +
                 "  rename <table> <old column name> <new column name>\n" +
                 "      Renames the specified column in the table\n" +
-                "  innerjoin <table1> <table2> <column-n1> <column-n2>\n" +
+                "  innerjoin <table1> <column-n1> <table2> <column-n2>\n" +
                 "      Joins the two tables on the specified columns\n";
 
         System.out.println(helpText);
